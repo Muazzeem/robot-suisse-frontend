@@ -1,35 +1,68 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <div v-if="pending">Loading...</div>
-        <div v-else-if="error">
-          <h1>Error loading page</h1>
-          <p>{{ error }}</p>
+    <div v-if="pageData?.currentPage?.body">
+        <div v-for="(item, idx) in pageData?.currentPage?.body" :key="'p_idx_' + idx">
+            <div>
+                <div>
+                    <HeroSection v-if="item?.type == 'hero_title'" :data="item?.value" />
+                </div>
+                <div>
+                    <TitleSection v-if="item?.type == 'title'" :data="item?.value" />
+                </div>
+    
+                <div class="container">
+                    <WhyChooseSection v-if="item?.type == 'why_chose'" :data="item?.value" />
+                </div>
+                <div style="background: #f9fafb;">
+                    <div class="container">
+                        <CategoriesSection v-if="item?.type == 'categories'" :data="item?.value" />
+                    </div>
+                </div>
+                <div class="container">
+                    <FeaturedSection v-if="item?.type == 'robots'" :data="item?.value" />
+                </div>
+                <div>
+                    <div class="container">
+                        <FaqSection v-if="item?.type == 'faq'" :data="item?.value" />
+                    </div>
+                </div>
+               <div style="background: #f9fafb;">
+                    <div class="container">
+                        <BlogSection v-if="item?.type == 'blogs'" :data="item?.value" />
+                    </div>
+                </div>
+
+                <div style="color: white;">
+                    <div class="container">
+                        <IndustryCallout v-if="item?.type == 'cta'" :data="item?.value" />
+                    </div>
+                </div>
+                <div>
+                    <div class="container">
+                        <ContactSection v-if="item?.type=='contact'" :data="item?.value" />
+                    </div>
+                </div>
+                <div>
+				    <Spacer v-if="item?.type=='spacer'" :data="item?.value" />
+			    </div>
+
+                <div class="container">
+                    <AIChatAssistant v-if="item?.type=='chat'" :data="item?.value" />
+                </div>
+
+                <div>
+                    <div class="container">
+                        <RobotUseCases v-if="item?.type=='tabs'" :data="item?.value" />
+                    </div>
+                </div>
+            </div>
         </div>
-        <div v-else-if="pageData">
-          <h1>{{ pageData.currentPage?.title || 'RobotSuisse' }}</h1>
-          <pre>{{ pageData }}</pre>
-        </div>
-        <div v-else>
-          <h1>Hello world</h1>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script setup>
 import { useCommonPageStore } from '../stores/common'
 
 const commonStore = useCommonPageStore()
-
-useHead({
-  title: 'RobotSuisse - Advanced Robotics for Every Industry',
-  meta: [
-    { name: 'description', content: 'Discover cutting-edge robotic solutions that transform manufacturing, healthcare, and service industries with Swiss precision and innovation.' }
-  ]
-})
 
 const { data: pageData, pending, error } = await useAsyncData('homepage', async () => {
   try {

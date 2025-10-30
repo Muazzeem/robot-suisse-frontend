@@ -15,6 +15,10 @@ export default defineNuxtConfig({
     }
   },
 
+  css: [
+    '/css/main.css',
+  ],
+
   alias: {
     '@': './app',
     '~': '.',

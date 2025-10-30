@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { PUBLIC_SETTINGS_ENDPOINT, PAGE_API_ROOT } from "..utils/endpoints";
+import { PUBLIC_SETTINGS_ENDPOINT, PAGE_API_ROOT } from "../utils/endpoints";
 
 export const useUtilityStore = defineStore("utilityStore", {
   state: () => ({
