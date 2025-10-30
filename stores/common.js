@@ -1,7 +1,7 @@
-
 import { defineStore } from "pinia";
-import { PAGE_API_ROOT } from "@/utils/endpoints";
-import { buildParams } from "@/utils/utils";
+import { PAGE_API_ROOT } from "~/utils/endpoints";
+import { buildParams } from "~/utils/utils";
+
 
 export const useCommonPageStore = defineStore("commonPageStores", {
   state: () => ({}),
