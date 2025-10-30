@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { PUBLIC_SETTINGS_ENDPOINT, PAGE_API_ROOT } from "@/utils/endpoints";
+import { PUBLIC_SETTINGS_ENDPOINT, PAGE_API_ROOT } from "..utils/endpoints";
 
 export const useUtilityStore = defineStore("utilityStore", {
   state: () => ({
@@ -47,6 +47,7 @@ export const useUtilityStore = defineStore("utilityStore", {
         throw error;
       }
     },
+    
     async fetchRobots() {
       if (this.isRobotsLoaded) {
         return;
@@ -67,6 +68,7 @@ export const useUtilityStore = defineStore("utilityStore", {
         throw error;
       }
     },
+    
     async fetchBlogs() {
       if (this.isBlogsLoaded) {
         return;
