@@ -3,7 +3,7 @@
         <NuxtLink to="/products" class="blog-link">
             <button :style="{ color: menuColor }" class="menu-trigger" @mouseenter="openMenu" @mouseleave="startCloseTimer"
                 @click="toggleMenu">
-                Products
+                {{ title }}
                 <span class="arrow" :class="{ open: isOpen }">
                     <svg class="dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="none">
                         <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
@@ -54,7 +54,11 @@ const props = defineProps({
     menuColor: {
         type: String,
         default: 'white'
-    }
+    },
+    title: {
+        type: String,
+        default: 'Products'
+    },
 })
 
 const utilityStore = useUtilityStore()

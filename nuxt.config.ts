@@ -1,9 +1,9 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  
+
   srcDir: 'app/',
-  
+
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/i18n',
@@ -23,6 +23,18 @@ export default defineNuxtConfig({
     '@': './app',
     '~': '.',
   },
+
+  i18n: {
+		strategy: "no_prefix",
+		locales: [
+      { code: 'en', name: 'English', file: 'en.js' },
+      { code: 'dech', name: 'Deutsch (CH)', file: 'dech.js' },
+      { code: 'frch', name: 'Français (CH)', file: 'frch.js' },
+      { code: 'itch', name: 'Italiano (CH)', file: 'itch.js' }
+    ],
+		defaultLocale: "dech",
+		lazy: true,
+	},
 
   app: {
     head: {

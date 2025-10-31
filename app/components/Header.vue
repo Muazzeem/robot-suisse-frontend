@@ -9,10 +9,10 @@
 
     <!-- Desktop Navigation -->
     <nav class="nav desktop-nav">
-      <NuxtLink to="/" class="nav-link">Home</NuxtLink>
-      <NuxtLink to="/about-us" class="nav-link">About</NuxtLink>
-      <ProductMenu />
-      <NuxtLink to="/blogs" class="nav-link">Blogs</NuxtLink>
+      <NuxtLink to="/" class="nav-link">{{ $t('menu.home') }}</NuxtLink>
+      <NuxtLink to="/about-us" class="nav-link">{{ $t('menu.about') }}</NuxtLink>
+      <ProductMenu :menu-color="'white'" :title="$t('menu.products')" />
+      <NuxtLink to="/blogs" class="nav-link">{{ $t('menu.blogs') }}</NuxtLink>
     </nav>
 
     <div class="header-actions">
@@ -57,7 +57,7 @@
 <script setup>
 const utilityStore = useUtilityStore();
 const { getMainMenus } = storeToRefs(utilityStore);
-
+const { locale, locales } = useI18n()
 
 const sidebarOpen = ref(false)
 
@@ -74,6 +74,11 @@ const toggleSidebar = () => {
 onBeforeRouteUpdate(() => {
   sidebarOpen.value = false
   document.body.style.overflow = ''
+})
+
+onMounted(() => {
+  console.log(locale.value)
+  console.log($t('menu.home'))
 })
 </script>
 

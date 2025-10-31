@@ -43,10 +43,8 @@
 			<div class="container">
 				<ContactSection v-if="item?.type=='contact_form'" :data="item?.value" />
 			</div>
-			<div v-if="route.path === '/blogs'">
-				<div class="container">
-					<BlogList />
-				</div>
+			<div class="container">
+				<BlogList v-if="item?.type=='blogs'" :data="item?.value" />	
 			</div>
 			<div class="container">
 				<Robot v-if="item?.type=='robots'" :data="item?.value" />
