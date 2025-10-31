@@ -2,7 +2,7 @@
     <div class="language-selector" ref="dropdownRef">
         <button class="lang-btn" @click="toggleDropdown">
             <div class="lang-name" :style="{ color: textColor }">
-                {{ selectedLanguage.code }}
+                {{ locale.toUpperCase() }}
             </div>
             <span class="arrow-icon" :class="{ 'rotate': isOpen }" :style="{ color: textColor }">
                 <svg class="dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -18,12 +18,12 @@
                     v-for="lang in languages" 
                     :key="lang.code"
                     class="lang-option"
-                    :class="{ 'active': lang.code === selectedLanguage.code }"
-                    @click="selectLanguage(lang)"
+                    :class="{ 'active': lang.code === locale }"
+                    @click="setLocale(lang.code)"
                 >
                     <span class="flag">{{ lang.flag }}</span>
                     <span class="lang-name">{{ lang.name }}</span>
-                    <span v-if="lang.code === selectedLanguage.code" class="check-icon">✓</span>
+                    <span v-if="lang.code === locale" class="check-icon">✓</span>
                 </button>
             </div>
         </transition>
@@ -33,11 +33,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const router = useRouter()
-const { locale } = useI18n()
+const { locale, setLocale } = useI18n()
 
 const isOpen = ref(false)
 const dropdownRef = ref(null)
@@ -50,29 +49,14 @@ const props = defineProps({
 })
 
 const languages = ref([
-  { code: "EN", name: "English", flag: "🇺🇸" },
-  { code: "DECH", name: "Deutsch (CH)", flag: "🇨🇭" },
-  { code: "FRCH", name: "Français (CH)", flag: "🇨🇭" },
-  { code: "ITCH", name: "Italiano (CH)", flag: "🇨🇭" },
+  { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "dech", name: "Deutsch (CH)", flag: "🇨🇭" },
+  { code: "frch", name: "Français (CH)", flag: "🇨🇭" },
+  { code: "itch", name: "Italiano (CH)", flag: "🇨🇭" },
 ])
-
-const findLang = (code) =>
-  languages.value.find(lang => lang.code.toUpperCase() === code?.toUpperCase())
-
-const queryLang = route.query.lang
-const selectedLanguage = ref(findLang(queryLang) || languages.value[0])
-
-locale.value = selectedLanguage.value.code.toLowerCase()
 
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value
-}
-
-const selectLanguage = (lang) => {
-  selectedLanguage.value = lang
-  isOpen.value = false
-  locale.value = lang.code.toLowerCase()
-  router.replace({ query: { ...route.query, lang: lang.code.toLowerCase() } })
 }
 
 const handleClickOutside = (event) => {

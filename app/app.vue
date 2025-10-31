@@ -12,20 +12,6 @@
 const nuxtApp = useNuxtApp();
 const isLoading = ref(false);
 
-const { locale, locales } = useI18n()
-
-onMounted(() => {
-	watch(
-		locale,
-		(newLocale) => {
-			if (newLocale) {
-				document.documentElement.lang = newLocale
-			}
-		},
-		{ immediate: true }
-	);
-});
-
 nuxtApp.hook("page:start", () => {
   isLoading.value = true;
 });
