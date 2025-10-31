@@ -3,7 +3,7 @@
         <section class="contact-section">
             <div class="container"> 
                 <!-- Bottom Contact Info -->
-                <div class="grid info-grid">
+                <div class="grid info-grid" v-if="getSettings">
                     <div class="info-card">
                         <div class="info-icon icon-wrapper">
                             <i class="fa-solid fa-phone icon-size"></i>
@@ -43,10 +43,6 @@
 </template>
 
 <script setup>
-import { storeToRefs } from "pinia";
-import { useUtilityStore } from "@/stores/utility";
-import { getLocaleField } from '@/utils/useLocale';
-
 const utilityStore = useUtilityStore();
 const { getSettings } = storeToRefs(utilityStore);
 

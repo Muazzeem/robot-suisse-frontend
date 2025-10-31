@@ -7,8 +7,6 @@
 </template>
 
 <script setup>
-import { getLocaleField } from '@/utils/useLocale';
-
 const props = defineProps({
   data: {
     type: Object,

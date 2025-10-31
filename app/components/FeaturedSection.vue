@@ -9,11 +9,13 @@
       />
     </div>
 
-    <RobotDetailsModal
-      :is-open="isModalOpen"
-      :robot="selectedRobot"
-      @close="closeModal"
-    />
+    <div v-if="selectedRobot">
+      <RobotDetailsModal
+        :is-open="isModalOpen"
+        :robot="selectedRobot"
+        @close="closeModal"
+      />
+    </div>
     
   </section>
 </template>
@@ -37,7 +39,6 @@ const fetchRobots = async () => {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
 
     const data = await response.json()
-    console.log(data)
     rawItems.value = data.items || []
   } catch (err) {
     console.error('Failed to fetch robots:', err)

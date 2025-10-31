@@ -31,7 +31,12 @@ export default defineNuxtConfig({
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' }
       ],
+      script: [
+        {
+          src: 'https://kit.fontawesome.com/f022d154d0.js',
+          crossorigin: 'anonymous'
+        }
+      ]
     }
   }
 })
-

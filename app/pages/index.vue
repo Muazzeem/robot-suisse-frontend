@@ -1,4 +1,5 @@
 <template>
+    <Header />
     <div v-if="pageData?.currentPage?.body">
         <div v-for="(item, idx) in pageData?.currentPage?.body" :key="'p_idx_' + idx">
             <div>
@@ -60,8 +61,6 @@
 </template>
 
 <script setup>
-import { useCommonPageStore } from '../stores/common'
-
 const commonStore = useCommonPageStore()
 
 const { data: pageData, pending, error } = await useAsyncData('homepage', async () => {
@@ -74,3 +73,19 @@ const { data: pageData, pending, error } = await useAsyncData('homepage', async 
   }
 })
 </script>
+
+<style scoped>
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1.25rem;
+  }
+}
+
+</style>

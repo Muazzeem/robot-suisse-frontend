@@ -1,22 +1,18 @@
 <template>
-  <section class="why-choose" :style="{ background: props.data.bg_color_code }">
+  <section class="why-choose" :style="{ background: props?.data?.bg_color_code }">
     <div class="container">
       <div class="section-header">
-        <div class="category-tag">{{ getLocaleField(props.data, 'tag', $i18n.locale) }}</div>
-        <div class="richtext" v-html="getLocaleField(props.data, 'title', $i18n.locale)"></div>
+        <div class="category-tag">{{ getLocaleField(props?.data, 'tag', $i18n.locale) }}</div>
+        <div class="richtext" v-html="getLocaleField(props?.data, 'title', $i18n.locale)"></div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { getLocaleField } from '../utils/useLocale';
 
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true
-  }
+  data: null
 });
 </script>
 

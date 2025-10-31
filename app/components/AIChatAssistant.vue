@@ -259,15 +259,9 @@ const attachFile = () => {
   // You can emit an event or open a file dialog
 };
 
-const toggleVoice = () => {
-  // Implement voice input logic
-  console.log('Voice input clicked');
-  // You can implement speech recognition here
-};
-
 // Lifecycle
 onMounted(() => {
-  connectWebSocket();
+  // connectWebSocket();
   scrollToBottom();
 });
 

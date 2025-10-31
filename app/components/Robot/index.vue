@@ -5,7 +5,7 @@
       v-html="getLocaleField(data, 'title', $i18n.locale)"
     ></div>
 
-    <CategoryFilter v-model="selectedCategory" />
+    <RobotCategoryFilter v-model="selectedCategory" />
 
     <section class="featured">
       <div class="products-grid">
@@ -17,24 +17,19 @@
         />
       </div>
     </section>
-    <RobotDetailsModal
-      :is-open="isModalOpen"
-      :robot="selectedRobot"
-      @close="closeModal"
-    />
+    <div v-if="selectedRobot">
+      <RobotDetailsModal
+        :is-open="isModalOpen"
+        :robot="selectedRobot"
+        @close="closeModal"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
-import { getLocaleField } from '@/utils/useLocale'
-import CategoryFilter from './CategoryFilter.vue'
-
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true
-  }
+  data: null
 })
 
 const selectedCategory = ref('all')
@@ -42,9 +37,13 @@ const rawItems = ref([])
 
 const isModalOpen = ref(false)
 const selectedRobot = ref(null)
-const URL = import.meta.env.VITE_APP_BASE_URL
+const config = useRuntimeConfig()
+
+const HOST = computed(() => {
+	return config.public.baseURL;
+});
 const BASE_URL =
-  `${URL}/api/v2/pages/?type=home.RobotDetailsPage&fields=title_en,title_dech,title_frch,title_itch,short_description_en,short_description_dech,short_description_frch,short_description_itch,thumbnail,author,tags_en,tags_dech,tags_frch,tags_itch,fetch_parent,last_published_at,body,is_featured,slug`
+  `${HOST.value}/api/v2/pages/?type=home.RobotDetailPage&fields=title,short_description,thumbnail,author,tags,fetch_parent,last_published_at,body,is_featured,slug`
 
 // Build API URL based on selected category
 const API_URL = computed(() => {
@@ -55,7 +54,7 @@ const API_URL = computed(() => {
 })
 
 const { result, pending, error, refresh } = await useFetch(API_URL, {
-  key: 'robots',
+  key: 'robots-products',
   transform: (res) => {
     rawItems.value = res.items || []
     return rawItems.value

@@ -112,10 +112,7 @@
 
 <script setup>
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true
-  }
+  data: null
 });
 
 const formData = ref({

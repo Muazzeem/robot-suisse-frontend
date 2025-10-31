@@ -55,7 +55,6 @@
 </template>
 
 <script setup>
-import { getStremleField } from '@/utils/useLocale';
 const loading = ref(true)
 const loadingMore = ref(false)
 const error = ref(null)
@@ -64,18 +63,17 @@ const nextPageUrl = ref(null)
 
 const config = useRuntimeConfig();
 const HOST = computed(() => {
-	return config.public.HOST;
+	return config.public.baseURL;
 });
 
 const featuredPost = computed(() => allPosts.value[0] || null)
 const regularPosts = computed(() => allPosts.value.slice(1))
 const hasMore = computed(() => !!nextPageUrl.value)
 
-const BASE_URL = import.meta.env.VITE_APP_BASE_URL
 // Fetch blog posts
 const fetchBlogPosts = async (url = null) => {
     try {
-        const apiUrl = `${BASE_URL}/api/v2/pages/?type=home.BlogDetailPage&fields=title,short_description,thumbnail,author,tags,fetch_parent,last_published_at,body,is_featured,slug`
+        const apiUrl = `${HOST.value}/api/v2/pages/?type=home.BlogDetailPage&fields=title,short_description,thumbnail,author,tags,fetch_parent,last_published_at,body,is_featured,slug`
         
         const response = await fetch(apiUrl)
         

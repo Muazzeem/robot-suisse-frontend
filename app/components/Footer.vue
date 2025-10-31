@@ -160,10 +160,6 @@
 </template>
 
 <script setup>
-import { storeToRefs } from "pinia";
-import { useUtilityStore } from "@/stores/utility";
-import { getLocaleField } from '@/utils/useLocale';
-
 const utilityStore = useUtilityStore();
 const { getSocials, getSettings, getFooterMenus } = storeToRefs(utilityStore);
 

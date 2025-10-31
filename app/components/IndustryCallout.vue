@@ -1,6 +1,5 @@
 <template>
     <section class="industry-callout">
-        <!-- <pre>{{ data }}</pre> -->
         <div class="callout-card"
             :style="{
                 background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${ImageUrl}') center / cover`
@@ -22,10 +21,7 @@
 
 <script setup>
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true
-  }
+  data: null
 });
 
 const config = useRuntimeConfig()
@@ -34,7 +30,7 @@ const HOST = computed(() => {
 });
 
 const ImageUrl = computed(() => {
-    return HOST.value + props.data.image.original.src
+    return HOST.value + props?.data?.image?.original?.src
 })
 </script>
 

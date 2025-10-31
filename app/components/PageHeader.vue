@@ -34,19 +34,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { getLocaleField } from '@/utils/useLocale'
-
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true
-  }
+  data: null
 })
 
 const config = useRuntimeConfig()
 const HOST = computed(() => {
-	return config.public.HOST;
+	return config.public.baseURL;
 });
 const imageURL = computed(() => HOST.value + props.data?.image?.original?.src)
 </script>

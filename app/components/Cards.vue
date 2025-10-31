@@ -3,7 +3,7 @@
     <div class="container">
       <div class="cards-grid">
         <div 
-          v-for="(item, index) in data.cards" 
+          v-for="(item, index) in data?.cards" 
           :key="index" 
           class="card"
         >
@@ -18,13 +18,9 @@
 </template>
 
 <script setup>
-import { getLocaleField } from '@/utils/useLocale';
 
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true
-  }
+  data: null
 });
 </script>
 

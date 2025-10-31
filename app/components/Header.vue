@@ -55,12 +55,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-import { storeToRefs } from "pinia";
-import { useUtilityStore } from "@/stores/utility";
-import { getLocaleField } from '@/utils/useLocale';
-
 const utilityStore = useUtilityStore();
 const { getMainMenus } = storeToRefs(utilityStore);
 

@@ -19,7 +19,7 @@
                   class="team-card"
                 >
                   <div class="card-image">
-                    <img :src="getFullImageUrl(member.image.original.src)" :alt="member.title" />
+                    <img :src="getFullImageUrl(member?.image?.original?.src)" :alt="member?.title" />
                   </div>
                   <div class="card-content">
                     <div class="card-description" v-html="getLocaleField(member, 'description', $i18n.locale)"></div>
@@ -67,29 +67,21 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRuntimeConfig } from "#app";
-import { getLocaleField } from '@/utils/useLocale';
-
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true
-  }
+  data: null
 });
 
 const config = useRuntimeConfig()
 const HOST = computed(() => {
-	return config.public.HOST;
+	return config.public.baseURL;
 });
 
 // Carousel setup
 const currentSlide = ref(0)
 const membersPerSlide = 3
-console.log(props.data)
 
-const members = computed(() => props.data.team.categories || [])
-const totalSlides = computed(() => Math.ceil(members.value.length / membersPerSlide))
+const members = computed(() => props?.data?.team?.categories || [])
+const totalSlides = computed(() => Math.ceil(members?.value?.length / membersPerSlide))
 
 const getSlideMembers = (slideIndex) => {
   const start = slideIndex * membersPerSlide
@@ -98,7 +90,7 @@ const getSlideMembers = (slideIndex) => {
 
 // Image URL
 const getFullImageUrl = (url) => {
-  return `${HOST}${url}`
+  return `${HOST.value}${url}`
 }
 
 // Carousel controls

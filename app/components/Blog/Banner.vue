@@ -1,7 +1,7 @@
 <template>
     <div class="banner-image">
         <div class="banner-image-container">
-            <img :src="HOST + props?.data?.image?.original?.src" alt="Robotics innovation" />
+          <img :src="HOST + props?.data?.image?.original?.src" alt="Robotics innovation" />
         </div>
     </div>
 </template>
@@ -9,14 +9,11 @@
 <script setup>
 const config = useRuntimeConfig()
 const HOST = computed(() => {
-	return config.public.HOST;
+	return config.public.baseURL;
 });
 
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
+  data: null,
 });
 
 </script>

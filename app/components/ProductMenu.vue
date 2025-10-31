@@ -45,15 +45,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import { storeToRefs } from "pinia"
-import { useUtilityStore } from "@/stores/utility"
-
-import { getStremleField, getLocaleField } from '@/utils/useLocale';
-
 const config = useRuntimeConfig();
 const HOST = computed(() => {
-	return config.public.HOST;
+	return config.public.baseURL;
 });
 
 const props = defineProps({
