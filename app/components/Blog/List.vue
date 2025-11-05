@@ -66,14 +66,19 @@ const HOST = computed(() => {
 	return config.public.baseURL;
 });
 
-const featuredPost = computed(() => allPosts.value[0] || null)
-const regularPosts = computed(() => allPosts.value.slice(1))
+const featuredPost = computed(() => {
+    return allPosts.value.find(post => post.is_featured === true) || null
+})
+
+const regularPosts = computed(() => {
+    return allPosts.value.filter(post => post.is_featured !== true)
+})
+
 const hasMore = computed(() => !!nextPageUrl.value)
 
-// Fetch blog posts
 const fetchBlogPosts = async (url = null) => {
     try {
-        const apiUrl = `${HOST.value}/api/v2/pages/?type=home.BlogDetailPage&fields=title,short_description,thumbnail,author,tags,fetch_parent,last_published_at,body,is_featured,slug`
+        const apiUrl = `${url || HOST.value + '/api/v2/pages/?type=home.BlogDetailPage&fields=title,short_description,thumbnail,author,tags,fetch_parent,last_published_at,body,is_featured,slug'}`
         
         const response = await fetch(apiUrl)
         

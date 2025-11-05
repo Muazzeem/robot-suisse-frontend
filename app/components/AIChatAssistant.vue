@@ -31,30 +31,6 @@
                 <div :class="['message-bubble', message.type === 'user' ? 'user-bubble' : 'bot-bubble']">
                   {{ message.text }}
                 </div>
-                <button 
-                  v-if="message.type === 'bot'"
-                  class="delete-btn" 
-                  @click="deleteMessage(index)"
-                  aria-label="Delete message"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Typing indicator -->
-              <div v-if="isTyping" class="message bot-message">
-                <div class="message-avatar bot-avatar">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 7h-3.18C13.4 7.84 11.3 7 9 7c-2.3 0-4.4.84-5.82 2H0v2h3v8h2v-8h2v8h2v-4c0-1.66 1.34-3 3-3h2c1.66 0 3 1.34 3 3v4h2v-8h2v8h2v-8h3V9z"/>
-                  </svg>
-                </div>
-                <div class="message-bubble bot-bubble typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
               </div>
             </div>
 
@@ -70,7 +46,7 @@
               <div class="input-actions">
                 <button class="input-btn" @click="attachFile" aria-label="Attach file">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 5v14M5 12h14"/>
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
                   </svg>
                 </button>
                 <button 
@@ -93,150 +69,157 @@
 </template>
 
 <script setup>
-
 const props = defineProps({
-  data: null,
+  data: {
+    type: Object,
+    default: () => ({})
+  },
   wsUrl: {
     type: String,
-    default: 'wss://echo.websocket.org'
+    default: 'wss://api.robot.marketize.biz/ws/chat'
   }
 });
 
-// Refs
-const messages = ref([
-  {
-    type: 'user',
-    text: 'I need a robot for warehouse automation. What do you recommend?',
-    timestamp: new Date()
-  },
-  {
-    type: 'bot',
-    text: 'Based on your warehouse size and requirements, I recommend the LogiBot Warehouse series. It offers heavy lifting capabilities and fleet coordination. Would you like to see detailed specifications?',
-    timestamp: new Date()
-  }
-]);
-
+const messages = ref([]);
 const inputMessage = ref('');
 const isTyping = ref(false);
 const isConnected = ref(false);
 const ws = ref(null);
 const messagesContainer = ref(null);
 const chatDemo = ref(null);
+const currentBotMessage = ref(null);
+let typingTimeout = null;
 
-// Computed
+
 const inputPlaceholder = computed(() => {
   if (!isConnected.value) return 'Connecting...';
   if (isTyping.value) return 'AI is typing...';
   return 'Ask anything';
 });
 
-const connectionStatus = computed(() => {
-  return isConnected.value ? 'Connected' : 'Disconnected';
-});
-
-// Methods
 const connectWebSocket = () => {
   try {
     ws.value = new WebSocket(props.wsUrl);
-    
+
     ws.value.onopen = () => {
-      console.log('WebSocket connected');
+      console.log('✅ WebSocket connected');
       isConnected.value = true;
     };
-    
+
     ws.value.onmessage = (event) => {
-      console.log('Message received:', event.data);
-      
       try {
         const data = JSON.parse(event.data);
         handleIncomingMessage(data);
       } catch (error) {
-        // If not JSON, treat as plain text
-        addBotMessage(event.data);
+        console.error('Error parsing message:', event.data);
       }
     };
-    
+
     ws.value.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error('❌ WebSocket error:', error);
       isConnected.value = false;
     };
-    
+
     ws.value.onclose = () => {
-      console.log('WebSocket disconnected');
+      console.warn('⚠️ WebSocket disconnected');
       isConnected.value = false;
-      
-      // Attempt to reconnect after 3 seconds
+
+      // Auto reconnect after 3s
       setTimeout(() => {
-        if (!isConnected.value) {
-          console.log('Attempting to reconnect...');
-          connectWebSocket();
-        }
+        if (!isConnected.value) connectWebSocket();
       }, 3000);
     };
-  } catch (error) {
-    console.error('Failed to connect WebSocket:', error);
+  } catch (err) {
+    console.error('WebSocket connection failed:', err);
     isConnected.value = false;
   }
 };
 
 const handleIncomingMessage = (data) => {
-  if (data.type === 'message') {
-    addBotMessage(data.text || data.message);
-  } else if (data.type === 'typing') {
-    isTyping.value = data.isTyping;
+  if (data.type === 'chunk') {
+    showChunk(data.content || '');
+  } else if (data.type === 'done') {
+    isTyping.value = false;
+    currentBotMessage.value = null;
+  } else if (data.type === 'message') {
+    addBotMessage(data.text || '');
   } else if (data.type === 'error') {
-    addBotMessage(`Error: ${data.message}`);
-  } else {
-    // Handle other message types
-    addBotMessage(data.text || data.message || JSON.stringify(data));
+    addBotMessage(`⚠️ Error: ${data.message}`);
   }
+};
+
+const showChunk = (chunk) => {
+  if (!chunk) return;
+  isTyping.value = true;
+
+  if (!currentBotMessage.value) {
+    currentBotMessage.value = {
+      type: 'bot',
+      text: '',
+      timestamp: new Date()
+    };
+    messages.value.push(currentBotMessage.value);
+  }
+
+  const chars = chunk.split('');
+  let index = 0;
+
+  const typeNextChar = () => {
+    if (index < chars.length) {
+      currentBotMessage.value.text += chars[index];
+      index++;
+      scrollToBottom();
+      setTimeout(typeNextChar, 20);
+    }
+  };
+
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(typeNextChar, 10);
 };
 
 const sendMessage = () => {
   if (!inputMessage.value.trim() || !isConnected.value || isTyping.value) return;
-  
-  const message = inputMessage.value.trim();
-  
-  // Add user message to chat
+
+  const msg = inputMessage.value.trim();
+
   messages.value.push({
     type: 'user',
-    text: message,
+    text: msg,
     timestamp: new Date()
   });
-  
-  // Send to WebSocket
+
   if (ws.value && ws.value.readyState === WebSocket.OPEN) {
     ws.value.send(JSON.stringify({
       type: 'message',
-      text: message,
-      timestamp: new Date().toISOString()
+      text: msg
     }));
-    
-    // Show typing indicator
-    isTyping.value = true;
   }
-  
-  // Clear input
+
   inputMessage.value = '';
-  
-  // Scroll to bottom
+  isTyping.value = true;
+  currentBotMessage.value = null;
   scrollToBottom();
 };
 
 const addBotMessage = (text) => {
   isTyping.value = false;
-  
+  currentBotMessage.value = null;
   messages.value.push({
     type: 'bot',
-    text: text,
+    text,
     timestamp: new Date()
   });
-  
   scrollToBottom();
 };
 
-const deleteMessage = (index) => {
-  messages.value.splice(index, 1);
+const attachFile = () => {
+  console.log('Attach file clicked');
+};
+
+const scrollToChat = () => {
+  if (chatDemo.value) {
+    chatDemo.value.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 };
 
 const scrollToBottom = () => {
@@ -247,21 +230,8 @@ const scrollToBottom = () => {
   });
 };
 
-const scrollToChat = () => {
-  if (chatDemo.value) {
-    chatDemo.value.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-};
-
-const attachFile = () => {
-  // Implement file attachment logic
-  console.log('Attach file clicked');
-  // You can emit an event or open a file dialog
-};
-
-// Lifecycle
 onMounted(() => {
-  // connectWebSocket();
+  connectWebSocket();
   scrollToBottom();
 });
 
@@ -269,7 +239,11 @@ onUnmounted(() => {
   if (ws.value) {
     ws.value.close();
   }
+  if (typingTimeout) {
+    clearTimeout(typingTimeout);
+  }
 });
+
 </script>
 
 <style scoped>
@@ -300,9 +274,9 @@ onUnmounted(() => {
 }
 
 :deep(.richtext h2) {
-  font-size: 48px !important;
-  line-height: 56px !important;
-  font-weight: 500 !important;
+  font-size: 48px;
+  line-height: 56px;
+  font-weight: 500;
 }
 
 :deep(.richtext h4) {
@@ -379,6 +353,52 @@ onUnmounted(() => {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.connection-status.connected {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.connection-status.disconnected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.connected .status-dot {
+  background: #10b981;
+}
+
+.disconnected .status-dot {
+  background: #ef4444;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 .chat-window {
   display: flex;
   flex-direction: column;
@@ -390,7 +410,7 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 1.5rem;
   min-height: 300px;
-  max-height: 350px;
+  max-height: 300px;
   overflow-y: auto;
   padding-right: 0.5rem;
 }
@@ -479,75 +499,12 @@ onUnmounted(() => {
   color: white;
   border-top-left-radius: 4px;
 }
-
-.typing-indicator {
-  display: flex;
-  gap: 0.25rem;
-  padding: 1rem 1.5rem;
-}
-
-.typing-indicator span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: white;
-  animation: typing 1.4s infinite;
-}
-
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%, 60%, 100% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-  30% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.delete-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: all 0.2s;
-}
-
-.bot-message:hover .delete-btn {
-  opacity: 1;
-}
-
-.delete-btn:hover {
-  background: #fee2e2;
-}
-
-.delete-btn svg {
-  color: #ef4444;
-}
-
 .chat-input-container {
   position: relative;
   background: white;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -618,51 +575,6 @@ onUnmounted(() => {
   background: #fca5a5;
 }
 
-.connection-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  margin-top: 1rem;
-  transition: all 0.3s ease;
-}
-
-.connection-status.connected {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.connection-status.disconnected {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-
-.connected .status-dot {
-  background: #10b981;
-}
-
-.disconnected .status-dot {
-  background: #ef4444;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
 @media (max-width: 1024px) {
   .ai-chat-info {
     padding-right: 0;
@@ -675,6 +587,10 @@ onUnmounted(() => {
 }
 
 @media (max-width: 760px) {
+  :deep(.richtext h2){
+    font-size: 34px;
+    line-height: 44px;
+  }
   .ai-chat-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -683,6 +599,7 @@ onUnmounted(() => {
   .chat-section {
     padding: 1rem;
   }
+  
   .ai-chat-section {
     padding: 2rem 0;
   }
@@ -701,8 +618,9 @@ onUnmounted(() => {
     max-height: 400px;
   }
 }
+
 @media (min-width: 1024px) {
-  .chat-section{
+  .chat-section {
     padding: 4rem 2rem;
   }
 }

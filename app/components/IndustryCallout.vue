@@ -117,8 +117,12 @@ const ImageUrl = computed(() => {
 }
 
 @media (max-width: 768px) {
+    :deep(.richtext h3){
+        font-size: 34px;
+        line-height: 44px;
+    }
     .industry-callout {
-        padding: 0;
+        padding: 2rem 0;
     }
     .callout-card {
         min-height: 300px;
@@ -139,6 +143,11 @@ const ImageUrl = computed(() => {
     .cta-button {
         padding: 0.875rem 1rem;
         font-size: .9rem;
+    }
+}
+@media (max-width: 480px) {
+    .container{
+        margin-top: 1rem !important;
     }
 }
 </style>

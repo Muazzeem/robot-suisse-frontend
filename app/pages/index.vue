@@ -61,6 +61,7 @@
 </template>
 
 <script setup>
+const requestURL = useRequestURL();
 const commonStore = useCommonPageStore()
 
 const { data: pageData, pending, error } = await useAsyncData('homepage', async () => {
@@ -72,6 +73,113 @@ const { data: pageData, pending, error } = await useAsyncData('homepage', async 
     throw e
   }
 })
+const getTitle = computed(() => {
+	return pageData?.value?.currentPage?.meta?.seo_title
+		? pageData?.value?.currentPage?.meta?.seo_title
+		: "";
+});
+
+const description = computed(() => {
+	return pageData?.value?.currentPage?.meta?.search_description
+		? pageData?.value?.currentPage?.meta?.search_description
+		: "";
+});
+
+const keywords = computed(() => {
+	return pageData?.value?.currentPage?.og_keywords
+		? pageData?.value?.currentPage?.og_keywords
+		: "";
+});
+
+const robotsDirective = computed(() => {
+	return pageData?.value?.currentPage?.robots_directive
+		? pageData?.value?.currentPage?.robots_directive
+		: "";
+});
+
+const prepareOGImageUrl = computed(() => {
+	return pageData?.value?.currentPage?.og_img_original
+		? HOST.value + pageData?.value?.currentPage?.og_img_original?.original?.src
+		: "";
+});
+
+const fullPath = computed(() => {
+	return requestURL?.href;
+});
+
+useHead({
+	title: getTitle?.value,
+	meta: [
+		{
+			name: "robots",
+			content: robotsDirective,
+		},
+		{
+			name: "title",
+			content: getTitle,
+		},
+		{
+			name: "description",
+			content: description,
+		},
+		{
+			name: "Keywords",
+			content: keywords,
+		},
+		{
+			hid: "og:Keywords",
+			name: "og:Keywords",
+			content: keywords,
+		},
+		{
+			hid: "og:title",
+			property: "og:title",
+			content: getTitle,
+		},
+		{
+			hid: "og:description",
+			property: "og:description",
+			content: description,
+		},
+		{
+			hid: "og:image",
+			property: "og:image",
+			content: prepareOGImageUrl,
+		},
+		{
+			hid: "og:url",
+			property: "og:url",
+			content: fullPath,
+		},
+		{
+			hid: "twitter:title",
+			property: "twitter:title",
+			content: getTitle,
+		},
+		{
+			hid: "twitter:description",
+			property: "twitter:description",
+			content: description,
+		},
+		{
+			hid: "twitter:image",
+			property: "twitter:image",
+			content: prepareOGImageUrl,
+		},
+		{
+			hid: "twitter:url",
+			property: "twitter:url",
+			content: fullPath,
+		},
+	],
+	link: [
+		{
+			rel: "canonical",
+			href: fullPath,
+		},
+	]
+});
+
 </script>
 
 <style scoped>

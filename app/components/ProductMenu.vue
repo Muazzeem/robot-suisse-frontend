@@ -28,14 +28,14 @@
                     <!-- Products Grid -->
                     <div class="products-section">
                         <div class="products-grid">
-                            <NuxtLink v-for="product in activeProducts" :key="product.id"
-                                :to="`/products/${product.meta?.slug || product.slug}`" class="product-card" @click="closeMenu">
+                            <div v-for="product in activeProducts" :key="product.id"
+                                class="product-card" @click="closeMenu">
                                 <div class="product-image">
                                     <img :src="HOST + product.thumbnail?.original?.src || product.image" 
                                          :alt="getLocaleField(product, 'title', $i18n.locale)" />
                                 </div>
                                 <h3 class="product-name">{{ getLocaleField(product, 'title', $i18n.locale) }}</h3>
-                            </NuxtLink>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,6 @@ watch(uniqueCategories, (newCategories) => {
     }
 }, { immediate: true })
 
-// Group robots by their parent category
 const robotsByCategory = computed(() => {
     if (!getRobots.value) return {}
     

@@ -21,8 +21,6 @@
 </template>
 
 <script setup>
-import { getLocaleField } from '../utils/useLocale';
-
 const props = defineProps({
   data: {
     type: Object,
@@ -106,12 +104,13 @@ const props = defineProps({
 
 @media (max-width: 768px) {
   .hero {
-    padding-bottom: 3rem;
+    align-items: center;
+    padding: 3rem 0;
   }
 
   .hero-stats {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .5rem;
     margin-top: 1rem;
   }
 
@@ -128,6 +127,17 @@ const props = defineProps({
 }
 
 @media (max-width: 480px) {
+  .hero {
+    align-items: center;
+    padding: 2rem 0;
+  }
+
+  .hero-stats {
+    grid-template-columns: 1fr;
+    gap: .2rem;
+    margin-top: 2rem;
+  }
+  
   .hero-title {
     width: 100%;
     font-size: 50px;

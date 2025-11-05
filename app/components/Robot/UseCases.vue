@@ -28,13 +28,13 @@
           ></div>
         </div>
 
-        <a
+        <NuxtLink
           v-if="activeItem.button_link"
-          :href="activeItem.button_link"
+          :to="activeItem.button_link"
           class="contact-button blog-link"
         >
           {{ getLocaleField(activeItem, 'button_text', $i18n.locale) }}
-        </a>
+        </NuxtLink>
       </div>
 
       <!-- Right Column -->
@@ -192,7 +192,7 @@ const currentIcon = computed(() => {
   font-size: 16px !important;
   color: #10182899 !important;
   font-weight: 300;
-  margin-left: 1.5rem;
+  margin-left: 1rem;
   padding-left: 1.5rem;
 }
 

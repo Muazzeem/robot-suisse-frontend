@@ -1,32 +1,31 @@
 <template>
   <div class="category-section">
     <div class="category-list">
-      <!-- All Robots button -->
+      <!-- "All Robots" Button -->
       <button
         :class="['category-btn', { active: selectedCategory === 'all' }]"
         @click="selectCategory('all')"
       >
-        {{ 'All Robots' }}
+        {{ $t('all_robots') || 'All Robots' }}
       </button>
 
-      <!-- Dynamic category buttons -->
+      <!-- Dynamic Unique Category Buttons -->
       <button
-        v-for="category in getRobots"
+        v-for="category in uniqueCategories"
         :key="category.id"
         :class="[
           'category-btn',
-          { active: category.fetch_parent?.id === selectedCategory }
+          { active: selectedCategory === category.id }
         ]"
-        @click="selectCategory(category.fetch_parent?.id)"
+        @click="selectCategory(category.id)"
       >
-        {{ getLocaleField(category, 'title', $i18n.locale) }}
+        {{ category.title.title[$i18n.locale] || category.title.title.en }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-
 const props = defineProps({
   modelValue: {
     type: [String, Number, null],
@@ -46,6 +45,7 @@ onMounted(async () => {
   }
 })
 
+// Keep prop in sync
 watch(
   () => props.modelValue,
   (newVal) => {
@@ -53,6 +53,19 @@ watch(
   }
 )
 
+// Extract unique fetch_parent categories
+const uniqueCategories = computed(() => {
+  const seen = new Map()
+  for (const robot of getRobots.value || []) {
+    const parent = robot.fetch_parent
+    if (parent && !seen.has(parent.id)) {
+      seen.set(parent.id, parent)
+    }
+  }
+  return Array.from(seen.values())
+})
+
+// Handle click
 const selectCategory = (categoryId) => {
   selectedCategory.value = categoryId
   emit('update:modelValue', categoryId)

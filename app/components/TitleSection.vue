@@ -18,7 +18,7 @@ const props = defineProps({
 
 <style scoped>
 .why-choose {
-  padding: 7rem 0 2rem;
+  padding: 5rem 0 2.5rem;
 }
 
 .container {
@@ -34,6 +34,15 @@ const props = defineProps({
   font-size: 48px;
   font-weight: 500;
   color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+:deep(.richtext h3){
+  padding: 1.5rem 0;
+  font-size: 34px;
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 44px;
   letter-spacing: -0.02em;
 }
 

@@ -36,8 +36,8 @@ const props = defineProps({
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
   margin-bottom: 3rem;
 }
 
@@ -68,7 +68,7 @@ p {
   white-space: pre-line;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 425px) {
   .mission-vision-section {
     padding: 1rem 0 1rem;
   }
@@ -99,5 +99,15 @@ p {
   margin-bottom: 0.75rem !important;
   font-size: 16px !important;
   color: #10182899 !important;
+}
+
+.icon-wrapper {
+  width: 50px;
+  height: 50px;
+  background: #FF00000F;
+}
+.icon-size{
+  color: #FF0000;
+  font-size: 1.5rem;
 }
 </style>

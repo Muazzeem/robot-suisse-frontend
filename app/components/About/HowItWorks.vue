@@ -3,44 +3,47 @@
     <div class="container">
       <div class="content-grid">
         <!-- Left Section -->
-        <!-- <div class="left-section">
-          <div class="category-tag" style="max-width: fit-content;">
-            {{ localizedData.tag }}
+        <div class="left-section">
+          <div class="left-content">
+            <div class="category-tag" style="max-width: fit-content;">
+              {{ getLocaleField (data, 'tag', $i18n.locale) }}
+            </div>
+            
+            <div class="richtext" v-html="getLocaleField (data, 'discription', $i18n.locale)"></div>
           </div>
           
-          <div class="richtext" v-html="localizedData.description"></div>
           <div class="chat-card">
             <div class="chat-header">
               <div class="icon-wrapper">
-                <i :class="localizedData.icon" class="icon-size"></i>
+                <i class="fa-solid fa-message icon-size"></i>
               </div>
               <div>
-                <h4 class="chat-title">{{ localizedData.title }}</h4>
-                <p class="chat-subtitle">{{ localizedData.subtitle }}</p>
+                <div v-html="getLocaleField (data, 'text', $i18n.locale)"></div>
               </div>
             </div>
-            
-            <button class="chat-button">
-              {{ localizedData.button_text }} 
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
+            <NuxtLink to="/chat" class="blog-link">
+              <button class="chat-button">
+                {{ getLocaleField (data, 'button_text', $i18n.locale) }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </NuxtLink>
           </div>
-        </div> -->
+        </div>
         
         <!-- Right Section -->
-        <!-- <div class="right-section">
+        <div class="right-section">
           <div 
-            v-for="(step, index) in localizedData.items" 
+            v-for="(step, index) in data.items" 
             :key="index" 
             class="step-card"
           >
             <span class="step-number">0{{ index + 1 }}</span>
-            <div class="richtext" v-html="step.description"></div>
+            <div class="richtext" v-html="getLocaleField (step, 'description', $i18n.locale)"></div>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
@@ -59,21 +62,19 @@ const props = defineProps({
 <style scoped>
 .robotics-section {
   background-color: #f9fafb;
-  padding: 4rem 1rem;
+  padding: 6rem 0;
 }
 
 .container {
   max-width: 1280px;
   margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .content-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 3rem;
-}
-.icon-size{
-  font-size: 1.5rem;
 }
 
 @media (min-width: 1024px) {
@@ -85,6 +86,19 @@ const props = defineProps({
 
 /* Left Section */
 .left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .left-section {
+    height: 100%;
+    justify-content: space-between;
+  }
+}
+
+.left-content {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -102,7 +116,7 @@ const props = defineProps({
 .chat-header {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .icon-wrapper {
@@ -157,13 +171,13 @@ const props = defineProps({
   flex-direction: column;
   gap: 2.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e5e7eb;
 }
 
 .step-card {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .step-number {

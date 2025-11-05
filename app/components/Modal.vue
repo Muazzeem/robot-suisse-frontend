@@ -4,7 +4,7 @@
             <div class="modal-container">
                 <div class="loading-content">
                     <div class="spinner"></div>
-                    <p class="loading-text">Loading...</p>
+                    <p class="loading-text">{{ $t('loader.loading') }}</p>
                 </div>
             </div>
         </div>

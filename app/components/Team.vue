@@ -67,45 +67,64 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+
 const props = defineProps({
   data: null
-});
+})
 
 const config = useRuntimeConfig()
-const HOST = computed(() => {
-	return config.public.baseURL;
-});
+const HOST = computed(() => config.public.baseURL)
 
-// Carousel setup
 const currentSlide = ref(0)
-const membersPerSlide = 3
+const membersPerSlide = ref(4) 
 
 const members = computed(() => props?.data?.team?.categories || [])
-const totalSlides = computed(() => Math.ceil(members?.value?.length / membersPerSlide))
+
+const totalSlides = computed(() =>
+  Math.ceil(members.value.length / membersPerSlide.value)
+)
 
 const getSlideMembers = (slideIndex) => {
-  const start = slideIndex * membersPerSlide
-  return members.value.slice(start, start + membersPerSlide)
+  const start = slideIndex * membersPerSlide.value
+  return members.value.slice(start, start + membersPerSlide.value)
 }
 
-// Image URL
-const getFullImageUrl = (url) => {
-  return `${HOST.value}${url}`
+const updateMembersPerSlide = () => {
+  const width = window.innerWidth
+  if (width >= 1024) membersPerSlide.value = 4
+  else if (width >= 768) membersPerSlide.value = 3
+  else if (width >= 640) membersPerSlide.value = 2
+  else membersPerSlide.value = 1
 }
 
-// Carousel controls
+onMounted(() => {
+  updateMembersPerSlide()
+  window.addEventListener('resize', updateMembersPerSlide)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateMembersPerSlide)
+})
+
+const getFullImageUrl = (url) => `${HOST.value}${url}`
+
 const nextSlide = () => {
   if (currentSlide.value < totalSlides.value - 1) currentSlide.value++
 }
-
 const prevSlide = () => {
   if (currentSlide.value > 0) currentSlide.value--
 }
-
 const goToSlide = (index) => {
   currentSlide.value = index
 }
+
+watch(membersPerSlide, () => {
+  currentSlide.value = 0
+})
+
 </script>
+
 
 <style scoped>
 .team-section {
@@ -164,6 +183,7 @@ const goToSlide = (index) => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
+  justify-items: center;
 }
 
 .team-card {
@@ -172,6 +192,9 @@ const goToSlide = (index) => {
   transition: all 0.3s ease;
   cursor: pointer;
   background-color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .team-card:hover {

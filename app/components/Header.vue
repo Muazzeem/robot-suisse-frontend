@@ -18,7 +18,7 @@
     <div class="header-actions">
       <LanguagesButton />
       <NuxtLink to="/contact-us">
-        <button class="contact-btn desktop-contact bg-red">Contact Us</button>
+        <button class="contact-btn desktop-contact bg-red">{{ $t('menu.contact-us') }}</button>
       </NuxtLink>
 
       <!-- Mobile Menu Button -->
@@ -43,11 +43,24 @@
         </div>
 
         <nav class="sidebar-nav">
-          <NuxtLink v-for="item in getMainMenus" :key="item.id" :to="item.link" class="sidebar-link" @click="toggleSidebar">{{ getLocaleField(item, 'name', $i18n.locale) }}</NuxtLink>
+          <NuxtLink to="/" class="sidebar-link" @click="toggleSidebar">
+            {{ $t('menu.home') }}
+          </NuxtLink>
+          <NuxtLink to="/about-us" class="sidebar-link" @click="toggleSidebar">
+            {{ $t('menu.about') }}
+          </NuxtLink>
+          <NuxtLink to="/products" class="sidebar-link" @click="toggleSidebar">
+            {{ $t('menu.products') }}
+          </NuxtLink>
+          <NuxtLink to="/blogs" class="sidebar-link" @click="toggleSidebar">
+            {{ $t('menu.blogs') }}
+          </NuxtLink>
         </nav>
 
         <div class="sidebar-footer">
-          <button class="contact-btn mobile-contact bg-red" @click="toggleSidebar">Contact Us</button>
+          <button class="contact-btn mobile-contact bg-red" @click="toggleSidebar">
+            {{ $t('menu.contact-us') }}
+          </button>
         </div>
       </aside>
     </transition>
@@ -55,9 +68,7 @@
 </template>
 
 <script setup>
-const utilityStore = useUtilityStore();
-const { getMainMenus } = storeToRefs(utilityStore);
-const { locale, locales } = useI18n()
+const { locale } = useI18n()
 
 const sidebarOpen = ref(false)
 
@@ -74,11 +85,6 @@ const toggleSidebar = () => {
 onBeforeRouteUpdate(() => {
   sidebarOpen.value = false
   document.body.style.overflow = ''
-})
-
-onMounted(() => {
-  console.log(locale.value)
-  console.log($t('menu.home'))
 })
 </script>
 

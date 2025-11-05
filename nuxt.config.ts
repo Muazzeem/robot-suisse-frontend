@@ -7,12 +7,17 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/i18n',
+    '@stefanobartoletti/nuxt-social-share',
   ],
 
   runtimeConfig: {
     public: {
       baseURL: 'https://api.robot.marketize.biz',
     }
+  },
+
+  socialShare: {
+    baseUrl: 'https://robot-suisse-frontend.vercel.app'
   },
 
   css: [

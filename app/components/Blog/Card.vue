@@ -97,4 +97,10 @@ const props = defineProps({
         font-size: 1.125rem;
     }
 }
+
+@media (max-width: 480px) {
+    .blog-content {
+        padding: .5rem 0;
+    }
+}
 </style>

@@ -3,34 +3,11 @@
     <div class="contact-grid">
       <div class="contact-content">
         <div class="richtext" v-html="getLocaleField(data, 'description', $i18n.locale)"></div>
-
-        <div class="chat-option">
-          <div class="chat-info">
-            <div class="chat-icon bg-red">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M12 2C6.48 2 2 6.48 2 12c0 1.54.36 3 .97 4.29L2 22l5.71-.97C9 21.64 10.46 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.38 0-2.67-.32-3.83-.88l-.27-.14-2.83.48.48-2.83-.14-.27C4.32 14.67 4 13.38 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8z" />
-                <path
-                  d="M12 6c-3.31 0-6 2.69-6 6 0 1.01.25 1.97.7 2.8l.15.27-.64 2.34 2.34-.64.27.15c.83.45 1.79.7 2.8.7 3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10.5c-.83 0-1.62-.21-2.3-.58l-.16-.09-1.17.32.32-1.17-.09-.16c-.37-.68-.58-1.47-.58-2.3 0-2.48 2.02-4.5 4.5-4.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5z" />
-              </svg>
-            </div>
-            <div>
-              <div class="chat-text" v-html="getLocaleField(data, 'chat_section', $i18n.locale)"></div>
-            </div>
-          </div>
-          <NuxtLink to="/chat" class="blog-link">
-            <button class="chat-button">
-            {{ getLocaleField(data, 'button_text', $i18n.locale) }}
-            <svg class="arrow-icon" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                clip-rule="evenodd" />
-            </svg>
-          </button>
-          </NuxtLink>
-        </div>
+        <ProfileCards :data="data" :padding="1" />
       </div>
-      <ContactForm />
+      <div class="hero-right">
+        <ContactForm />
+      </div>
     </div>
   </section>
 </template>
@@ -39,36 +16,6 @@
 const props = defineProps({
   data: null
 });
-
-const formData = ref({
-  fullName: '',
-  email: '',
-  companyName: '',
-  industry: '',
-  inquiryType: '',
-  projectDescription: ''
-})
-
-const isSubmitting = ref(false)
-
-const handleSubmit = async () => {
-  isSubmitting.value = true
-
-  await new Promise(resolve => setTimeout(resolve, 1500))
-
-  formData.value = {
-    fullName: '',
-    email: '',
-    companyName: '',
-    industry: '',
-    inquiryType: '',
-    projectDescription: ''
-  }
-
-  isSubmitting.value = false
-  alert('Thank you! We will contact you soon.')
-}
-
 </script>
 
 <style scoped>
@@ -83,6 +30,15 @@ const handleSubmit = async () => {
   align-items: start;
 }
 
+@media (max-width: 768px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 0rem;
+  }
+  .contact-content {
+    padding-right: 0rem !important;
+  }
+}
 .contact-content {
   padding-right: 2rem;
 }
