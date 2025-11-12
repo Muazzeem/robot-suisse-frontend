@@ -88,7 +88,7 @@ const API_URL = computed(() => {
   let url = `${BASE_URL.value}&limit=${pageSize}&offset=${offset}`
 
   if (selectedCategory.value !== 'all') {
-    url += `&fetch_parent=${selectedCategory.value}`
+    url += `&child_of=${selectedCategory.value}`
   }
   return url
 })

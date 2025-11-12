@@ -166,11 +166,13 @@ textarea {
     .content {
         flex-direction: column;
         align-items: stretch;
-        text-align: center;
     }
 
     .hero-right {
         width: 100%;
+    }
+    .hero-left {
+        text-align: center;
     }
 
     .hero-left h1 {

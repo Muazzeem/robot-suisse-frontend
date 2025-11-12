@@ -30,7 +30,9 @@
           </NuxtLink>
         </div>
       </div>
-      <ContactForm />
+      <div class="contact-form-wrapper">
+        <ContactForm />
+      </div>
     </div>
   </section>
 </template>
@@ -39,41 +41,12 @@
 const props = defineProps({
   data: null
 });
-
-const formData = ref({
-  fullName: '',
-  email: '',
-  companyName: '',
-  industry: '',
-  inquiryType: '',
-  projectDescription: ''
-})
-
-const isSubmitting = ref(false)
-
-const handleSubmit = async () => {
-  isSubmitting.value = true
-
-  await new Promise(resolve => setTimeout(resolve, 1500))
-
-  formData.value = {
-    fullName: '',
-    email: '',
-    companyName: '',
-    industry: '',
-    inquiryType: '',
-    projectDescription: ''
-  }
-
-  isSubmitting.value = false
-  alert('Thank you! We will contact you soon.')
-}
-
 </script>
 
 <style scoped>
 .contact {
   background: white;
+  padding: 2rem 1rem;
 }
 
 .contact-grid {
@@ -81,11 +54,18 @@ const handleSubmit = async () => {
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
   align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .contact-content {
   padding-right: 2rem;
 }
+
+.contact-form-wrapper {
+  width: 100%;
+}
+
 .richtext{
   padding-bottom: 2rem;
 }
@@ -142,6 +122,7 @@ const handleSubmit = async () => {
   font-size: 14px;
   font-weight: 400;
 }
+
 .chat-option {
   background: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -172,18 +153,6 @@ const handleSubmit = async () => {
   color: white;
 }
 
-.chat-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 0.25rem;
-}
-
-.chat-subtitle {
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
 .chat-button {
   width: 100%;
   padding: 0.875rem 1.5rem;
@@ -209,5 +178,101 @@ const handleSubmit = async () => {
 .arrow-icon {
   width: 18px;
   height: 18px;
+}
+
+/* Tablet breakpoint */
+@media (max-width: 992px) {
+  .contact-grid {
+    gap: 3rem;
+  }
+  
+  .contact-content {
+    padding-right: 1rem;
+  }
+  
+  :deep(.richtext h2) {
+    font-size: 32px !important;
+    line-height: 44px !important;
+  }
+  
+  :deep(.richtext h3) {
+    font-size: 28px !important;
+    line-height: 38px !important;
+  }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 768px) {
+  .contact {
+    padding: 1.5rem 1rem;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .contact-content {
+    padding-right: 0;
+  }
+  
+  :deep(.richtext h2) {
+    font-size: 28px !important;
+    line-height: 38px !important;
+  }
+  
+  :deep(.richtext h3) {
+    font-size: 24px !important;
+    line-height: 34px !important;
+  }
+  
+  :deep(.richtext p),
+  :deep(.richtext li) {
+    font-size: 15px !important;
+  }
+  
+  .chat-info {
+    gap: 0.75rem;
+  }
+  
+  .chat-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .chat-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Small mobile breakpoint */
+@media (max-width: 480px) {
+  .contact {
+    padding: 1rem 0.75rem;
+  }
+  
+  .contact-grid {
+    gap: 1.5rem;
+  }
+  
+  :deep(.richtext h2) {
+    font-size: 24px !important;
+    line-height: 32px !important;
+  }
+  
+  :deep(.richtext h3) {
+    font-size: 20px !important;
+    line-height: 28px !important;
+  }
+  
+  .chat-option {
+    padding: 0.875rem;
+  }
+  
+  .chat-button {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
 }
 </style>

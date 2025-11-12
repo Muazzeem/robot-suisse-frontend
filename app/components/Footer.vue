@@ -367,7 +367,7 @@ const { getSocials, getSettings, getFooterMenus } = storeToRefs(utilityStore);
 
   .footer-links {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1rem;
   }
 
   .footer-bottom {

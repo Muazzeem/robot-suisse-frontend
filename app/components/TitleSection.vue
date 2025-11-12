@@ -70,6 +70,9 @@ const props = defineProps({
   .section-description {
     max-width: 100%;
   }
+  .container{
+    padding: 0 1.25rem;
+  }
 }
 
 @media (max-width: 480px) {

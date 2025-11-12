@@ -35,7 +35,7 @@ const props = defineProps({
 
 :deep(h3){
   font-size: 3.5rem;
-  font-weight: 500;
+  font-weight: 500 !important;
   color: #1a1a1a;
   margin-bottom: 0.75rem;
   line-height: 1;

@@ -309,6 +309,9 @@ const parsedTags = computed(() => {
     width: 40px;
     height: 40px;
   }
+  .blog-article {
+    max-width: 85%;
+  }
 }
 
 :deep(.social-share-button){
