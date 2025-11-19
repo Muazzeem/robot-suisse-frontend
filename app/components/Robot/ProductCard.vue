@@ -6,11 +6,11 @@
     </div>
 
     <div class="product-content">
-      <h3 class="product-name">{{ getLocaleField(product, 'title', $i18n.locale) }}</h3>
+      <h3 class="product-name">{{ getStremleField(product.robot_title, $i18n.locale) }}</h3>
       <div class="product-specs">
        <div class="spec-item">
           <span class="spec-label">
-            {{ getStremleField(product.short_description, $i18n.locale) }}
+            {{ truncateText(getStremleField(product.short_description, $i18n.locale), 100) }}
           </span>
         </div>
       </div>

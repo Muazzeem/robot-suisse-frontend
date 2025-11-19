@@ -65,6 +65,9 @@
 			<div class="container">
 				<Robot v-if="item?.type == 'robots'" :data="item?.value" />
 			</div>
+			<div class="container">
+				<Companies v-if="item?.type == 'companies'" :data="item?.value" />
+			</div>
 		</div>
 	</div>
 </template>

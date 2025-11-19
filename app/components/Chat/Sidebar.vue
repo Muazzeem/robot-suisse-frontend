@@ -15,7 +15,7 @@
         :class="{ open: isSidebarVisible }"
       >
         <div class="sidebar-header">
-          <h2 class="sidebar-title">Robots</h2>
+          <h2 class="sidebar-title">More Robots</h2>
           <button v-if="isMobile" class="collapse-btn" @click="toggleSidebar" :title="isSidebarVisible ? 'Collapse sidebar' : 'Expand sidebar'">
             <i :class="isSidebarVisible ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right'"></i>
           </button>
@@ -29,15 +29,22 @@
             :class="{ active: selectedRobot === getLocaleField(robot, 'title', $i18n.locale) }"
             @click="handleRobotClick(robot)"
           >
-            <div class="robot-image-wrapper">
-              <img
-                class="robot-image"
-                :src="HOST + robot.thumbnail?.original?.src || robot.image"
-                :alt="getLocaleField(robot, 'title', $i18n.locale)"
-              />
-            </div>
-            <div class="robot-name">
-              {{ getLocaleField(robot, 'title', $i18n.locale) }}
+            <div class="robot-header">
+              <div class="robot-image-wrapper">
+                <img
+                  class="robot-image"
+                  :src="HOST + robot.thumbnail?.original?.src || robot.image"
+                  :alt="getLocaleField(robot, 'title', $i18n.locale)"
+                />
+              </div>
+              <div>
+                <p class="robot-name">
+                {{ getStremleField(robot.robot_title, $i18n.locale) }}
+                </p>
+                <p class="robot-description">
+                  {{ truncateText(getStremleField(robot?.short_description, $i18n.locale), 13) }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -70,7 +77,7 @@ const isMobile = ref(false);
 
 const checkScreen = () => {
   isMobile.value = window.innerWidth <= 768;
-  isSidebarVisible.value = !isMobile.value; // Sidebar visible on desktop, hidden by default on mobile
+  isSidebarVisible.value = !isMobile.value;
 };
 
 const toggleSidebar = () => {
@@ -91,6 +98,7 @@ onMounted(() => {
   // Emit initial state
   emit('toggle', isSidebarVisible.value);
 });
+
 onBeforeUnmount(() => {
   window.removeEventListener("resize", checkScreen);
 });
@@ -99,8 +107,8 @@ onBeforeUnmount(() => {
 <style scoped>
 /* ===== Sidebar Container ===== */
 .sidebar {
-  width: 200px;
-  background-color: #ffffff;
+  width: 250px;
+  background-color: #1018281A;
   border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
@@ -129,12 +137,12 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #ffffff;
 }
 .sidebar-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #111827;
+  font-size: 18px;
+  font-weight: 400;
+  color: #10182899;
+  text-transform: uppercase;
 }
 .collapse-btn {
   background: none;
@@ -148,8 +156,8 @@ onBeforeUnmount(() => {
 .sidebar-content {
   flex: 1;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #9ca3af #f3f4f6;
+  background-color: #1018281A;
+  border-right: 1px solid #e5e7eb;
 }
 .sidebar-content::-webkit-scrollbar {
   width: 6px;
@@ -162,45 +170,66 @@ onBeforeUnmount(() => {
 /* ===== Robot Items ===== */
 .robot-item {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
+  align-items: flex-start;
+  gap: 0.5rem;
   padding: 0.75rem;
   border-radius: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-bottom: 0.5rem;
+  margin: 0.5rem;
+  background-color: #676e7f1a;
+  border: 1px solid #e5e7eb;
 }
+
+.robot-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
 .robot-image-wrapper {
-  width: 150px;
-  aspect-ratio: 1;
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .robot-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+
 .robot-item:hover {
-  background-color: #f3f4f6;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
 }
-/* .robot-item.active {
-  background-color: #FF0000;
-  color: white;
-} */
-/* .robot-item.active .robot-name {
-  color: white;
-} */
+
+.robot-item.active {
+  background-color: #FEF2F2;
+  border-color: #FF0000;
+}
+
 .robot-name {
-  font-weight: 600;
-  font-size: 1rem;
-  text-align: center;
-  color: #374151;
+  font-weight: 500;
+  font-size: 16px;
+  text-align: left;
+  color: #101828;
   line-height: 1.4;
+  flex: 1;
 }
+
+.robot-description {
+  font-size: 14px;
+  font-weight: 400;
+  color: #10182899;
+}
+
 
 /* ===== Overlay for mobile ===== */
 .overlay {
@@ -217,7 +246,7 @@ onBeforeUnmount(() => {
 /* ===== Floating Button (Mobile Only) ===== */
 .floating-btn {
   position: fixed;
-  top: 4rem;
+  top: 5rem;
   left: 20px;
   background-color: #ff0000;
   color: white;
@@ -230,7 +259,11 @@ onBeforeUnmount(() => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
   transition: background-color 0.3s ease;
   z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .floating-btn:hover {
   background-color: #d40000;
 }
@@ -242,9 +275,15 @@ onBeforeUnmount(() => {
     height: 100vh;
     top: 0;
     border-right: none;
+    background-color: #1018281A;
   }
   .sidebar.open {
     transform: translateX(0);
+  }
+  
+  .overlay {
+    top: 0;
+    height: 100vh;
   }
 }
 </style>

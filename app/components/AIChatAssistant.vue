@@ -16,7 +16,7 @@
 
         <div class="ai-chat-demo" ref="chatDemo">
           <div class="chat-window">
-            <ChatPage :data="{ 'min-height': '35rem', 'max-height': '35rem' }" />
+            <ChatPage :data="{ 'min-height': '40rem', 'max-height': '40rem' }" />
           </div>
         </div>
       </div>
@@ -198,7 +198,7 @@ const props = defineProps({
 
 @media (min-width: 1024px) {
   .chat-section {
-    padding: 4rem 2rem;
+    padding: 1.5rem 2rem;
   }
 }
 </style>

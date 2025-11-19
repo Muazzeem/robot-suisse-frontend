@@ -62,7 +62,7 @@ const props = defineProps({
     max-width: 1300px;
     position: relative;
     z-index: 2;
-    gap: 12rem;
+    gap: 8rem;
     padding: 6rem 0;
 }
 

@@ -3,7 +3,6 @@
     class="chat-container"
     :style="{ minHeight: data['min-height'], maxHeight: data['max-height'] }"
   >
-    <!-- Welcome screen -->
     <div v-if="messages.length === 0" class="welcome-screen">
       <div class="welcome-content">
         <div class="welcome-icon">
@@ -18,7 +17,6 @@
       </div>
     </div>
 
-    <!-- Chat messages -->
     <div v-else class="messages-wrapper" ref="messagesContainer">
       <div class="messages-content">
         <div
@@ -44,13 +42,11 @@
       </div>
     </div>
 
-    <!-- Input box -->
     <div class="input-container">
-      <!-- Chips section - fixed at bottom above input -->
       <div class="chips-section" v-if="!selectedChip && !inputMessage && (!messages || messages.length === 0)" ref="chipsSection">
         <div class="chips-container">
           <button
-            v-for="chip in suggestionChips"
+            v-for="chip in Chips"
             :key="chip.id"
             @click="handleChipClick(chip.id, $event)"
             :class="['chip', { 'chip-active': selectedChip === chip.id }]"
@@ -61,7 +57,6 @@
         </div>
       </div>
 
-      <!-- Suggestions dropdown - shows when chip is selected -->
       <transition name="slide-up">
         <div 
           v-if="selectedChip" 
@@ -110,6 +105,11 @@
 </template>
 
 <script setup>
+import Chips from './Chips'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
 const props = defineProps({
   data: {
     type: Object,
@@ -131,77 +131,10 @@ const suggestionsDropdown = ref(null)
 const chipsSection = ref(null)
 const messagesEnd = ref(null)
 const messagesContainer = ref(null)
-const uidKey = 'chat_uid'
-const uid = ref('')
 
-const suggestionChips = [
-  {
-    id: 'setup',
-    icon: '📚',
-    label: 'Setup Guide',
-    suggestions: [
-      'deploy and setup the CC1 cleaning robot?',
-      'install the T300 towing device?',
-      'How to calibrate BellaBot Pro tray cameras?',
-      'How to configure MT1 for warehouse cleaning?',
-    ],
-  },
-  {
-    id: 'troubleshoot',
-    icon: '🔧',
-    label: 'Troubleshoot',
-    suggestions: [
-      'Help me fix robot charging and battery issues',
-      'Help me fix navigation and positioning problems',
-      'Help me fix sensor calibration and detection',
-      'Help me fix mapping and localization errors',
-    ],
-  },
-  {
-    id: 'compare',
-    icon: '⚖️',
-    label: 'Compare',
-    suggestions: [
-      'Compare CC1 vs MT1 cleaning capabilities',
-      'Compare BellaBot vs BellaBot Pro features',
-      'Compare T300 vs MT1 for material transport',
-      'Compare environmental requirements across models',
-    ],
-  },
-  {
-    id: 'maintenance',
-    icon: '🛠️',
-    label: 'Maintenance',
-    suggestions: [
-      'Maintain cleaning brushes and filtration systems',
-      'Maintain charging systems and battery health',
-      'Maintain sensors and camera calibration',
-      'Maintain safety systems and fall prevention',
-    ],
-  },
-  {
-    id: 'operations',
-    icon: '⚙️',
-    label: 'Operations',
-    suggestions: [
-      'Operate robots in different cleaning modes',
-      'Operate towing and material transport systems',
-      'Operate virtual walls and restricted areas',
-      'Operate multi-robot coordination and scheduling',
-    ],
-  },
-  {
-    id: 'think',
-    icon: '💡',
-    label: 'Think Deploy',
-    suggestions: [
-      'Analyze optimal robot deployment strategies',
-      'Analyze environmental safety requirements',
-      'Analyze cost-benefit of automation solutions',
-      'Analyze integration with existing workflows',
-    ],
-  },
-]
+const uidCookie = useCookie('uid')
+
+const API_BASE = 'https://api.robot.marketize.biz/api/v1'
 
 const inputPlaceholder = computed(() =>
   isTyping.value ? 'AI is typing...' : 'Ask anything...'
@@ -221,38 +154,48 @@ const suggestionsDropdownStyle = computed(() => {
 })
 
 const handleChipClick = (id, event) => {
-  if (event) {
-    event.stopPropagation()
-  }
+  if (event) event.stopPropagation()
   selectedChip.value = selectedChip.value === id ? null : id
 }
 
 const getCurrentSuggestions = () => {
-  const chip = suggestionChips.find(c => c.id === selectedChip.value)
+  const chip = Chips.find(c => c.id === selectedChip.value)
   return chip ? chip.suggestions : []
 }
 
 const handleSuggestionClick = (suggestion, event) => {
-  if (event) {
-    event.stopPropagation()
-  }
+  if (event) event.stopPropagation()
   inputMessage.value = 'How to ' + suggestion
   selectedChip.value = null
   nextTick(() => document.querySelector('.message-input')?.focus())
 }
 
-// Handle incoming WebSocket messages
+const loadChatHistory = async () => {
+  if (!uidCookie.value) return
+  try {
+    const res = await fetch(`${API_BASE}/chat?uid=${encodeURIComponent(uidCookie.value)}`)
+    if (!res.ok) return
+    const data = await res.json()
+    if (Array.isArray(data.results)) {
+      messages.value = data.results.flatMap(item => [
+        { type: 'user', text: item.question },
+        { type: 'assistant', text: item.output }
+      ])
+      scrollToBottom()
+    }
+  } catch (err) {
+    console.error('Error loading chat history:', err)
+  }
+}
+
 const handleWsMessage = (event) => {
   try {
     const payload = JSON.parse(event.data)
     if (payload && payload.type === 'broadcast' && Array.isArray(payload.content)) {
       for (const item of payload.content) {
-        if (!item) continue
-        const itemUid = item.uid || item.user_id || item.userId
-        if (itemUid && uid.value && itemUid === uid.value) {
+        if (uidCookie.value) {
           const output = item.output ?? item.message ?? item.text ?? ''
           if (!output) continue
-          // Find the last typing indicator from assistant, replace with output; otherwise push new assistant message
           let typingIdx = -1
           for (let i = messages.value.length - 1; i >= 0; i--) {
             if (messages.value[i]?.type === 'assistant' && messages.value[i]?.text === 'AI is typing…') {
@@ -271,15 +214,13 @@ const handleWsMessage = (event) => {
       }
     }
   } catch (err) {
-    // Ignore malformed messages
   }
 }
 
-// Connect to WebSocket server
 const connectWebSocket = () => {
-  if (!uid.value) return
+  if (!uidCookie.value) return
   try {
-    const wsUrl = `wss://api.robot.marketize.biz/ws/chat?uid=${encodeURIComponent(uid.value)}`
+    const wsUrl = `wss://api.robot.marketize.biz/ws/chat?uid=${encodeURIComponent(uidCookie.value)}`
     const ws = new WebSocket(wsUrl)
     socket.value = ws
     ws.onopen = () => {
@@ -292,21 +233,18 @@ const connectWebSocket = () => {
     ws.onclose = () => {
       isConnected.value = false
       socket.value = null
-      // Optional simple retry (basic backoff)
       setTimeout(() => connectWebSocket(), 1500)
     }
   } catch (e) {
     isConnected.value = false
   }
 }
-
 const sendMessage = async () => {
   const msg = inputMessage.value.trim()
   if (!msg || isTyping.value) return
 
   messages.value.push({ type: 'user', text: msg })
   inputMessage.value = ''
-  // Reset textarea height
   nextTick(() => {
     const textarea = document.querySelector('.message-input')
     if (textarea) {
@@ -318,13 +256,11 @@ const sendMessage = async () => {
   scrollToBottom()
 
   try {
-    // Send the prompt to backend; response will arrive via WebSocket
     const response = await fetch('https://muazzem.app.n8n.cloud/webhook/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uid: uid.value || sessionStorage.getItem(uidKey), message: msg }),
+      body: JSON.stringify({ uid: uidCookie.value, message: msg }),
     })
-    // We ignore HTTP response body and rely on WS broadcast
     if (!response.ok) {
       messages.value[typingIndex].text = 'Failed to send message.'
       isTyping.value = false
@@ -338,31 +274,28 @@ const sendMessage = async () => {
 }
 
 const scrollToBottom = () => {
-  nextTick(() => {
-    if (messagesEnd.value && typeof messagesEnd.value.scrollIntoView === 'function') {
-      messagesEnd.value.scrollIntoView({ behavior: 'smooth', block: 'end' })
-      return
-    }
-    const container = document.querySelector('.messages-content')
-    container?.scrollTo({ top: 999999, behavior: 'smooth' })
-  })
+  if (route.path === '/chat') {
+    nextTick(() => {
+      if (messagesEnd.value && typeof messagesEnd.value.scrollIntoView === 'function') {
+        messagesEnd.value.scrollIntoView({ behavior: 'smooth', block: 'end' })
+        return
+      }
+      const container = document.querySelector('.messages-content')
+      container?.scrollTo({ top: 999999, behavior: 'smooth' })
+    })
+  }
 }
 
-// Auto-resize textarea
 const autoResizeTextarea = (event) => {
   const textarea = event.target
   textarea.style.height = 'auto'
   textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`
 }
 
-// Handle click outside to close suggestions
 const handleClickOutside = (event) => {
   if (!selectedChip.value) return
-
   const dropdown = suggestionsDropdown.value
   const chips = chipsSection.value
-
-  // Check if click is outside both suggestions dropdown and chips section
   if (
     dropdown &&
     !dropdown.contains(event.target) &&
@@ -372,25 +305,12 @@ const handleClickOutside = (event) => {
   }
 }
 
-// Add click outside listener
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-  // Initialize uid once per session
-  let existing = sessionStorage.getItem(uidKey)
-  if (!existing) {
-    try {
-      existing = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`
-    } catch (e) {
-      existing = `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`
-    }
-    sessionStorage.setItem(uidKey, existing)
-  }
-  uid.value = existing
-  // Connect WS after uid available
   connectWebSocket()
+  loadChatHistory()
 })
 
-// Remove click outside listener
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
   if (socket.value && socket.value.readyState === WebSocket.OPEN) {
@@ -398,22 +318,20 @@ onUnmounted(() => {
   }
 })
 
-// Watch for selected robot name changes and update input
 watch(() => props.selectedRobotName, (newRobotName) => {
   if (newRobotName) {
-    inputMessage.value = "Tell me about the " + newRobotName + " robot" 
-    // Focus the input after updating
+    inputMessage.value = "Tell me about the " + newRobotName + " robot"
     nextTick(() => {
       const textarea = document.querySelector('.message-input')
       if (textarea) {
         textarea.focus()
-        // Auto-resize if needed
         autoResizeTextarea({ target: textarea })
       }
     })
   }
 }, { immediate: false })
 </script>
+
 
 <style scoped>
 @import './chat.css';

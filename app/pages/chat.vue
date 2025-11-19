@@ -52,7 +52,7 @@ onMounted(async () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 200px;
+  margin-left: 250px;
   overflow: hidden;
   transition: margin-left 0.3s ease-in-out;
 }

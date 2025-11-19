@@ -79,7 +79,7 @@ const HOST = computed(() => config.public.baseURL)
 // --- Base API ---
 const BASE_URL = computed(
   () =>
-    `${HOST.value}/api/v2/pages/?type=home.RobotDetailPage&fields=title,short_description,thumbnail,author,tags,fetch_parent,last_published_at,body,is_featured,slug`
+    `${HOST.value}/api/v2/pages/?type=home.RobotDetailPage&fields=robot_title,short_description,thumbnail,author,tags,fetch_parent,last_published_at,body,is_featured,slug`
 )
 
 // --- API with Pagination & Category ---
@@ -186,10 +186,9 @@ const closeModal = () => {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 }
-
 .featured {
   margin-top: 1.5rem;
 }
