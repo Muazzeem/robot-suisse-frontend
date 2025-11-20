@@ -8,7 +8,7 @@
       }"
     ></div>
     <div class="container">
-      <div v-if="data.tag.en">
+      <div v-if="data?.tag?.en">
         <div class="update-badge">
           {{ getLocaleField(data, 'tag', $i18n.locale) }}
         </div>

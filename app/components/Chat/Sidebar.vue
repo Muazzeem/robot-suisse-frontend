@@ -2,9 +2,7 @@
   <div>
     <!-- Floating button (visible on mobile only) -->
     <button v-if="isMobile && !isSidebarVisible" class="floating-btn" @click="toggleSidebar">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-      </svg>
+      <img width="30" height="30" src="https://img.icons8.com/plumpy/24/select-left-column.png" alt="select-left-column"/>
     </button>
 
     <!-- Sidebar -->
@@ -14,14 +12,10 @@
         class="sidebar"
         :class="{ open: isSidebarVisible }"
       >
-        <div class="sidebar-header">
-          <h2 class="sidebar-title">More Robots</h2>
-          <button v-if="isMobile" class="collapse-btn" @click="toggleSidebar" :title="isSidebarVisible ? 'Collapse sidebar' : 'Expand sidebar'">
-            <i :class="isSidebarVisible ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right'"></i>
-          </button>
-        </div>
-
         <div class="sidebar-content">
+          <div style="padding: 1rem;">
+            <h2 class="sidebar-title">More Robots</h2>
+          </div>
           <div
             v-for="(robot, index) in getRobots"
             :key="index"
@@ -108,7 +102,6 @@ onBeforeUnmount(() => {
 /* ===== Sidebar Container ===== */
 .sidebar {
   width: 250px;
-  background-color: #1018281A;
   border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
@@ -131,13 +124,6 @@ onBeforeUnmount(() => {
   transform: translateX(-100%);
 }
 
-/* ===== Header ===== */
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-}
 .sidebar-title {
   font-size: 18px;
   font-weight: 400;
@@ -248,15 +234,11 @@ onBeforeUnmount(() => {
   position: fixed;
   top: 5rem;
   left: 20px;
-  background-color: #ff0000;
-  color: white;
   border: none;
   border-radius: 50%;
   width: 52px;
   height: 52px;
-  font-size: 1.3rem;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
   transition: background-color 0.3s ease;
   z-index: 1200;
   display: flex;
@@ -279,6 +261,7 @@ onBeforeUnmount(() => {
   }
   .sidebar.open {
     transform: translateX(0);
+    background-color: #FAFAFA;
   }
   
   .overlay {

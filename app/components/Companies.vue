@@ -135,7 +135,7 @@ const visiblePages = computed(() => {
 
 const fetchCompanies = async (page = 1) => {
   try {
-    const data = await $fetch("https://api.robot.marketize.biz/api/companies", {
+    const data = await $fetch("http://localhost:8000/api/companies", {
       method: "GET",
       query: {
         page: page,
@@ -173,7 +173,6 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
-  max-width: 1300px;
   margin: 0 auto;
 }
 
@@ -189,8 +188,8 @@ onMounted(() => {
 }
 
 .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .logo-container {
