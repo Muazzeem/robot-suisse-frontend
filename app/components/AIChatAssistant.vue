@@ -192,7 +192,7 @@ const props = defineProps({
   }
 
   .ai-chat-demo {
-    padding: 1rem;
+    padding: 0rem;
   }
 }
 

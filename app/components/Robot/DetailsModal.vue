@@ -18,11 +18,12 @@
           <div class="spec-item">
             <div v-for="(spec, index) in robot.body" :key="index">
               <RobotTable v-if="spec.type === 'table'" :tableData="getLocaleField(spec.value, 'table', $i18n.locale)" />
-              <div class="custom-block" v-html="getLocaleField(spec.value, 'text', $i18n.locale)"></div>
+              <div class="custom-block" v-if="spec.type ==='richtext'" v-html="getLocaleField(spec.value, 'content', $i18n.locale)"></div>
             </div>
           </div>
-
-          <button class="btn-quote-modal bg-red">Quote</button>
+          <nuxt-link to="/contact-us">
+            <button class="btn-quote-modal bg-red">Quote</button>
+          </nuxt-link>
         </div>
       </div>
     </div>
@@ -141,7 +142,6 @@ onUnmounted(() => {
   font-size: 2rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 2rem;
 }
 
 .specs-list {

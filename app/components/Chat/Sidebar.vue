@@ -1,20 +1,15 @@
 <template>
   <div>
-    <!-- Floating button (visible on mobile only) -->
-    <button v-if="isMobile && !isSidebarVisible" class="floating-btn" @click="toggleSidebar">
-      <img width="30" height="30" src="https://img.icons8.com/plumpy/24/select-left-column.png" alt="select-left-column"/>
-    </button>
-
     <!-- Sidebar -->
     <transition name="slide">
       <aside
-        v-if="!isMobile || isSidebarVisible"
+        v-if="(!isMobile && isSidebarOpen) || (isMobile && localSidebarVisible) || isSidebarOpen"
         class="sidebar"
-        :class="{ open: isSidebarVisible }"
+        :class="{ open: localSidebarVisible || isSidebarOpen }"
       >
         <div class="sidebar-content">
           <div style="padding: 1rem;">
-            <h2 class="sidebar-title">More Robots</h2>
+            <h2 class="sidebar-title">ROBOT MODELS</h2>
           </div>
           <div
             v-for="(robot, index) in getRobots"
@@ -47,7 +42,7 @@
 
     <!-- Overlay (for mobile only) -->
     <div
-      v-if="isMobile && isSidebarVisible"
+      v-if="isMobile && localSidebarVisible"
       class="overlay"
       @click="toggleSidebar"
     ></div>
@@ -63,20 +58,25 @@ const { getRobots } = storeToRefs(utilityStore);
 
 const props = defineProps({
   selectedRobot: String,
+  isSidebarOpen: {
+    type: Boolean,
+    default: true
+  }
 });
+
 const emit = defineEmits(["select", "toggle"]);
 
-const isSidebarVisible = ref(true);
+const localSidebarVisible = ref(true);
 const isMobile = ref(false);
 
 const checkScreen = () => {
   isMobile.value = window.innerWidth <= 768;
-  isSidebarVisible.value = !isMobile.value;
+  localSidebarVisible.value = !isMobile.value;
 };
 
 const toggleSidebar = () => {
-  isSidebarVisible.value = !isSidebarVisible.value;
-  emit('toggle', isSidebarVisible.value);
+  localSidebarVisible.value = !localSidebarVisible.value;
+  emit('toggle', localSidebarVisible.value);
 };
 
 const { locale } = useI18n()
@@ -84,13 +84,24 @@ const { locale } = useI18n()
 const handleRobotClick = (robot) => {
   const robotName = getLocaleField(robot, 'title', locale.value);
   emit('select', robotName);
+  
+  // Close sidebar on mobile after selection
+  if (isMobile.value) {
+    toggleSidebar();
+  }
 };
+
+// Watch for external sidebar toggle
+watch(() => props.isSidebarOpen, (newVal) => {
+  if (!isMobile.value) {
+    localSidebarVisible.value = newVal;
+  }
+});
 
 onMounted(() => {
   checkScreen();
   window.addEventListener("resize", checkScreen);
-  // Emit initial state
-  emit('toggle', isSidebarVisible.value);
+  emit('toggle', localSidebarVisible.value);
 });
 
 onBeforeUnmount(() => {
@@ -106,12 +117,13 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 4.3rem; /* below fixed header */
+  top: auto;
   left: 0;
   height: calc(100vh - 4.3rem);
   z-index: 1100;
   transform: translateX(0);
   transition: transform 0.3s ease-in-out;
+  background-color: #ffffff;
 }
 
 /* Slide transition for sidebar */
@@ -125,32 +137,30 @@ onBeforeUnmount(() => {
 }
 
 .sidebar-title {
-  font-size: 18px;
-  font-weight: 400;
-  color: #10182899;
-  text-transform: uppercase;
-}
-.collapse-btn {
-  background: none;
-  border: none;
+  font-size: 14px;
+  font-weight: 600;
   color: #6b7280;
-  cursor: pointer;
-  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* ===== Scrollable Content ===== */
 .sidebar-content {
   flex: 1;
   overflow-y: auto;
-  background-color: #1018281A;
-  border-right: 1px solid #e5e7eb;
+  background-color: #ffffff;
 }
+
 .sidebar-content::-webkit-scrollbar {
   width: 6px;
 }
 .sidebar-content::-webkit-scrollbar-thumb {
-  background-color: #9ca3af;
+  background-color: #d1d5db;
   border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
 }
 
 /* ===== Robot Items ===== */
@@ -158,13 +168,13 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
+  padding: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease;
   margin: 0.5rem;
-  background-color: #676e7f1a;
-  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
 }
 
 .robot-header {
@@ -176,12 +186,13 @@ onBeforeUnmount(() => {
 }
 
 .robot-image-wrapper {
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   flex-shrink: 0;
   overflow: hidden;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
 }
 
 .robot-image {
@@ -192,39 +203,43 @@ onBeforeUnmount(() => {
 }
 
 .robot-item:hover {
-  background-color: #f9fafb;
+  background-color: #ffffff;
   border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .robot-item.active {
   background-color: #FEF2F2;
   border-color: #FF0000;
+  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.1);
 }
 
 .robot-name {
-  font-weight: 500;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 15px;
   text-align: left;
   color: #101828;
   line-height: 1.4;
   flex: 1;
+  margin: 0 0 0.25rem 0;
 }
 
 .robot-description {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
-  color: #10182899;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.3;
 }
-
 
 /* ===== Overlay for mobile ===== */
 .overlay {
   position: fixed;
-  top: 4.3rem; /* below header */
+  top: 4.3rem;
   left: 0;
   width: 100%;
   height: calc(100vh - 4.3rem);
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   transition: opacity 0.3s ease-in-out;
 }
@@ -239,15 +254,18 @@ onBeforeUnmount(() => {
   width: 52px;
   height: 52px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   z-index: 1200;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .floating-btn:hover {
-  background-color: #d40000;
+  background-color: #f9fafb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* ===== Responsive ===== */
@@ -255,13 +273,13 @@ onBeforeUnmount(() => {
   .sidebar {
     transform: translateX(-100%);
     height: 100vh;
-    top: 0;
+    top: auto;
     border-right: none;
-    background-color: #1018281A;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   }
+  
   .sidebar.open {
     transform: translateX(0);
-    background-color: #FAFAFA;
   }
   
   .overlay {

@@ -1,9 +1,8 @@
 <template>
   <header class="header">
     <NuxtLink to="/" style="text-decoration: none;">
-      <div class="logo">
-        <div class="logo-icon bg-red"></div>
-        <span class="logo-text">RobotSuisse</span>
+      <div class="logo" v-if="getSettings">
+        <img class="logo-icon" :src="HOST + getSettings.logo" :alt="getSettings?.company_name_en" />
       </div>
     </NuxtLink>
 
@@ -37,8 +36,7 @@
       <aside v-if="sidebarOpen" class="sidebar">
         <div class="sidebar-header">
           <div class="logo">
-            <div class="logo-icon bg-red"></div>
-            <span class="logo-text">RobotSuisse</span>
+            <img class="logo-icon" :src="HOST + getSettings?.logo" :alt="getSettings?.company_name_en" />
           </div>
         </div>
 
@@ -68,7 +66,13 @@
 </template>
 
 <script setup>
-const { locale } = useI18n()
+const config = useRuntimeConfig()
+const utilityStore = useUtilityStore();
+const { getSettings } = storeToRefs(utilityStore);
+
+const HOST = computed(() => {
+	return config.public.baseURL;
+});
 
 const sidebarOpen = ref(false)
 
@@ -113,29 +117,11 @@ onBeforeRouteUpdate(() => {
 }
 
 .logo-icon {
-  width: 32px;
-  height: 32px;
+  height: 36px;
+  width: 100px;
   border-radius: 6px;
   position: relative;
   flex-shrink: 0;
-}
-
-.logo-icon::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 12px;
-  height: 12px;
-  background: white;
-  border-radius: 2px;
-}
-
-.logo-text {
-  color: white;
-  font-size: 1.25rem;
-  font-weight: 600;
 }
 
 .nav {
@@ -316,7 +302,6 @@ onBeforeRouteUpdate(() => {
   border-left: 3px solid transparent;
 }
 
-.sidebar-link:hover,
 .sidebar-link.router-link-active {
   background: rgba(239, 68, 68, 0.1);
   border-radius: 15px;
@@ -392,7 +377,7 @@ onBeforeRouteUpdate(() => {
 
 @media (max-width: 480px) {
   .header {
-    padding: 1rem;
+    padding: .5rem 1rem;
   }
 
   .logo-text {
@@ -400,8 +385,8 @@ onBeforeRouteUpdate(() => {
   }
 
   .logo-icon {
-    width: 28px;
-    height: 28px;
+    width: 70px;
+    height: 38px;
   }
 
   .logo-icon::after {

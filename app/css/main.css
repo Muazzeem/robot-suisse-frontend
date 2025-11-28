@@ -82,10 +82,6 @@ body {
 }
 
 @media (max-width: 768px) {
-  .featured {
-    padding: 2rem 0;
-  }
-
   .products-grid {
     grid-template-columns: 1fr;
   }

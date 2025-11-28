@@ -16,8 +16,6 @@
 </template>
 
 <script setup>
-import { getLocaleField } from '../utils/useLocale';
-
 const config = useRuntimeConfig()
 
 const HOST = computed(() => {
@@ -86,13 +84,24 @@ const props = defineProps({
     background-color: white;
     border-radius: 10px;
 }
-
+:deep(h4) {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 :deep(p) {
     margin-bottom: 0.75rem !important;
     font-size: 14px !important;
     line-height: 21px !important;
     color: #737373 !important;
     font-weight: 400 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 @media (max-width: 1024px) {

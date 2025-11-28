@@ -3,10 +3,39 @@
     class="chat-container"
     :style="{ minHeight: data['min-height'], maxHeight: data['max-height'] }"
   >
+    <!-- Collapse/Expand Button -->
+    <button v-if="route.path === '/chat'"
+      class="sidebar-toggle-btn" 
+      :class="{ 'sidebar-open': isSidebarOpen, 'sidebar-closed': !isSidebarOpen }"
+      @click="$emit('toggle-sidebar')"
+    >
+      <svg 
+        v-if="isSidebarOpen" 
+        width="20" 
+        height="20" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg 
+        v-else 
+        width="20" 
+        height="20" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
     <div v-if="messages.length === 0" class="welcome-screen">
+      
       <div class="welcome-content">
         <div class="welcome-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" opacity="0.3"/>
             <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -118,8 +147,14 @@ const props = defineProps({
   selectedRobotName: {
     type: String,
     default: null
+  },
+  isSidebarOpen: {
+    type: Boolean,
+    default: true
   }
 })
+
+const emit = defineEmits(['toggle-sidebar'])
 
 const messages = ref([])
 const inputMessage = ref('')
@@ -177,7 +212,8 @@ const loadChatHistory = async () => {
     if (!res.ok) return
     const data = await res.json()
     if (Array.isArray(data.results)) {
-      messages.value = data.results.flatMap(item => [
+      messages.value = data.results
+      .flatMap(item => [
         { type: 'user', text: item.question },
         { type: 'assistant', text: item.output }
       ])
@@ -190,32 +226,43 @@ const loadChatHistory = async () => {
 
 const handleWsMessage = (event) => {
   try {
-    const payload = JSON.parse(event.data)
-    if (payload && payload.type === 'broadcast' && Array.isArray(payload.content)) {
-      for (const item of payload.content) {
-        if (uidCookie.value) {
-          const output = item.output ?? item.message ?? item.text ?? ''
-          if (!output) continue
-          let typingIdx = -1
-          for (let i = messages.value.length - 1; i >= 0; i--) {
-            if (messages.value[i]?.type === 'assistant' && messages.value[i]?.text === 'AI is typing…') {
-              typingIdx = i
-              break
-            }
-          }
-          if (typingIdx >= 0) {
-            messages.value[typingIdx].text = output
-          } else {
-            messages.value.push({ type: 'assistant', text: output })
-          }
-          isTyping.value = false
-          scrollToBottom()
-        }
+    const payload = JSON.parse(event.data);
+
+    if (payload?.type === "broadcast" && payload.content) {
+      const output =
+        payload.content.output ??
+        payload.content.message ??
+        payload.content.text ??
+        "";
+
+      if (!output) return;
+
+      // Find typing bubble
+      const typingIdx = messages.value.findIndex(
+        (m) => m.type === "assistant" && m.text === "AI is typing…"
+      );
+
+      if (typingIdx !== -1) {
+        // Replace “typing…” with actual message
+        messages.value = messages.value.map((m, i) =>
+          i === typingIdx ? { ...m, text: output } : m
+        );
+      } else {
+        // Add a new assistant message
+        messages.value = [
+          ...messages.value,
+          { type: "assistant", text: output },
+        ];
       }
+
+      isTyping.value = false;
+      scrollToBottom();
     }
-  } catch (err) {
+  } catch (e) {
+    console.error("WS parse error", e);
   }
-}
+};
+
 
 const connectWebSocket = () => {
   if (!uidCookie.value) return
@@ -239,6 +286,7 @@ const connectWebSocket = () => {
     isConnected.value = false
   }
 }
+
 const sendMessage = async () => {
   const msg = inputMessage.value.trim()
   if (!msg || isTyping.value) return
@@ -256,10 +304,10 @@ const sendMessage = async () => {
   scrollToBottom()
 
   try {
-    const response = await fetch('https://muazzem.app.n8n.cloud/webhook/chat', {
+    const response = await fetch('https://n8n.marketize.biz/webhook/robot-chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uid: uidCookie.value, message: msg }),
+      body: JSON.stringify({ session_id: uidCookie.value, message: msg, company_name: "robot_suisses"}),
     })
     if (!response.ok) {
       messages.value[typingIndex].text = 'Failed to send message.'
@@ -336,4 +384,40 @@ watch(() => props.selectedRobotName, (newRobotName) => {
 <style scoped>
 @import './chat.css';
 
+.sidebar-toggle-btn {
+  position: fixed;
+  top: 5.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.4s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #6b7280;
+}
+.sidebar-toggle-btn.sidebar-open {
+  left: 16.5rem;
+}
+
+/* When sidebar is closed */
+.sidebar-toggle-btn.sidebar-closed {
+  left: 1.5rem;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #FF0000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-toggle-btn:active {
+  transform: scale(0.95);
+}
 </style>

@@ -3,12 +3,9 @@
     <div class="footer-content">
       <div class="footer-brand">
         <div class="logo">
-          <div class="logo-dots">
-            <span class="dot red"></span>
-            <span class="dot white"></span>
-            <span class="dot red"></span>
-          </div>
-          <span class="logo-text">{{ getLocaleField(getSettings, 'company_name', $i18n.locale) }}</span>
+          <div class="logo" v-if="getSettings">
+        <img class="logo-icon" :src="HOST + getSettings.logo" :alt="getSettings?.company_name_en" />
+      </div>
         </div>
         <p class="brand-description">
           {{ getLocaleField(getSettings, 'about', $i18n.locale) }}
@@ -160,8 +157,13 @@
 </template>
 
 <script setup>
+const config = useRuntimeConfig()
 const utilityStore = useUtilityStore();
 const { getSocials, getSettings, getFooterMenus } = storeToRefs(utilityStore);
+
+const HOST = computed(() => {
+	return config.public.baseURL;
+});
 
 </script>
 
@@ -190,7 +192,7 @@ const { getSocials, getSettings, getFooterMenus } = storeToRefs(utilityStore);
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .logo-dots {
@@ -230,6 +232,14 @@ const { getSocials, getSettings, getFooterMenus } = storeToRefs(utilityStore);
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.logo-icon {
+  height: 50px;
+  width: 100%;
+  border-radius: 6px;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .contact-item {
@@ -366,7 +376,6 @@ const { getSocials, getSettings, getFooterMenus } = storeToRefs(utilityStore);
   }
 
   .footer-links {
-    grid-template-columns: 1fr;
     gap: 1rem;
   }
 

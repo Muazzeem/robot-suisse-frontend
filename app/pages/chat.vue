@@ -5,14 +5,21 @@
         :selected-robot="selectedRobot" 
         @select="handleRobotSelect"
         @toggle="handleSidebarToggle"
+        :is-sidebar-open="isSidebarOpen"
       />
       <div class="chat-main" :class="{ 'sidebar-collapsed': !isSidebarOpen }">
-        <ChatPage :data="pageData" :selected-robot-name="selectedRobot" />
+        <ChatPage 
+          :data="pageData" 
+          :selected-robot-name="selectedRobot"
+          :is-sidebar-open="isSidebarOpen"
+          @toggle-sidebar="toggleSidebar"
+        />
       </div>
     </div>
 </template>
 
 <script setup>
+
 definePageMeta({ layout: 'chat' })
 
 const selectedRobot = ref(null)
@@ -21,11 +28,14 @@ const isSidebarOpen = ref(true)
 
 const handleRobotSelect = (robotTitle) => {
   selectedRobot.value = robotTitle
-  // You can add additional logic here when a robot is selected
 }
 
 const handleSidebarToggle = (isOpen) => {
   isSidebarOpen.value = isOpen
+}
+
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value
 }
 
 // Fetch robots on mount
@@ -34,6 +44,10 @@ const utilityStore = useUtilityStore()
 onMounted(async () => {
   if (!utilityStore.getRobots || utilityStore.getRobots.length === 0) {
     await utilityStore.fetchRobots()
+  }
+  // Set initial sidebar state based on screen size
+  if (window.innerWidth <= 768) {
+    isSidebarOpen.value = false
   }
 })
 </script>
@@ -44,7 +58,7 @@ onMounted(async () => {
   height: calc(100vh - 4.3rem);
   background-color: #f7f7f8;
   overflow: hidden;
-  margin-top: 4.3rem;
+  margin-top: 5.2rem;
   position: relative;
 }
 
@@ -70,4 +84,9 @@ onMounted(async () => {
     margin-left: 0;
   }
 }
-</style>  
+@media (max-width: 480px) {
+  .chat-layout {
+    margin-top: 3.4rem;
+  }
+}
+</style>

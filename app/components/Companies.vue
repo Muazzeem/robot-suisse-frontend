@@ -12,10 +12,15 @@
       <!-- Actual Content -->
       <div v-else v-for="org in organizations" :key="org.id" class="card" @click="navigateToOrganization(org.slug)">
         <div class="logo-container">
-          <img :src="org.logo" :alt="org.name" class="logo" />
+          <div v-if="org.logo_image">
+            <img :src="HOST + org.logo_image.original.src" :alt="org.name.en" class="logo" />
+          </div>
+          <div v-else>
+            <img :src="org.logo" :alt="org.name.en" class="logo" />
+          </div>
         </div>
-        <h2 class="org-name">{{ org.name }}</h2>
-        <p class="description">{{ org.description }}</p>
+        <h2 class="org-name">{{ getStremleField(org.name, $i18n.locale) }}</h2>
+        <p class="description">{{ getStremleField(org.description, $i18n.locale) }}</p>
       </div>
     </div>
 
@@ -85,8 +90,14 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+const config = useRuntimeConfig()
 
 const router = useRouter();
+
+const HOST = computed(() => {
+	return config.public.baseURL;
+});
+
 
 const organizations = ref([]);
 const currentPage = ref(1);
@@ -102,50 +113,50 @@ const visiblePages = computed(() => {
   const current = currentPage.value;
   
   if (total <= 7) {
-    // Show all pages if total is 7 or less
-    for (let i = 1; i <= total; i++) {
-      pages.push(i);
-    }
+    for (let i = 1; i <= total; i++) pages.push(i);
   } else {
-    // Always show first page
     pages.push(1);
-    
-    if (current > 3) {
-      pages.push('...');
-    }
-    
-    // Show pages around current page
+    if (current > 3) pages.push("...");
     const start = Math.max(2, current - 1);
     const end = Math.min(total - 1, current + 1);
-    
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    
-    if (current < total - 2) {
-      pages.push('...');
-    }
-    
-    // Always show last page
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (current < total - 2) pages.push("...");
     pages.push(total);
   }
-  
   return pages;
 });
 
+// Fetch companies from Wagtail API
 const fetchCompanies = async (page = 1) => {
+  loading.value = true;
+
+  const offset = (page - 1) * pageSize.value;
+
   try {
-    const data = await $fetch("http://localhost:8000/api/companies", {
+    const data = await $fetch(PAGE_API_ROOT, {
       method: "GET",
       query: {
-        page: page,
-        page_size: pageSize.value,
+        type: "home.CompanyDetailPage",
+        fields: "company_name,short_description,logo,banner,cover_image,logo_image,slug",
+        limit: pageSize.value,
+        offset: offset,
       },
     });
-    organizations.value = data.results;
+
+    // Convert Wagtail API response
+    organizations.value = data.items.map((item) => ({
+      id: item.id,
+      name: item.company_name,
+      description: item.short_description,
+      logo: item.logo,
+      logo_image: item.logo_image,
+      slug: item.meta.slug,
+    }));
+
     currentPage.value = page;
-    totalPages.value = Math.ceil(data.count / pageSize.value);
-    totalItems.value = data.count;
+    totalItems.value = data.meta.total_count;
+    totalPages.value = Math.ceil(totalItems.value / pageSize.value);
+
   } catch (error) {
     console.error("Error fetching companies:", error);
   } finally {
@@ -153,8 +164,9 @@ const fetchCompanies = async (page = 1) => {
   }
 };
 
+// Navigate to company details page
 const navigateToOrganization = (slug) => {
-  router.push(`/${slug}`); 
+  router.push(`/companies/${slug}`);
 };
 
 onMounted(() => {
@@ -202,8 +214,8 @@ onMounted(() => {
 }
 
 .logo {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
 }
 

@@ -6,11 +6,11 @@
     </div>
 
     <div class="product-content">
-      <h3 class="product-name">{{ getStremleField(product.robot_title, $i18n.locale) }}</h3>
+      <h3 class="product-name">{{ getLocaleField(product, 'title', $i18n.locale) }}</h3>
       <div class="product-specs">
        <div class="spec-item">
           <span class="spec-label">
-            {{ truncateText(getStremleField(product.short_description, $i18n.locale), 100) }}
+            {{ getStremleField(product.short_description, $i18n.locale) }}
           </span>
         </div>
       </div>
@@ -20,7 +20,9 @@
       <button class="btn-details" @click="$emit('open-modal', product)">
         Details
       </button>
-      <button class="btn-quote bg-red">Quote</button>
+      <nuxt-link to="/contact-us">
+        <button class="btn-quote bg-red">Quote</button>
+      </nuxt-link>
     </div>
   </div>
 </template>
@@ -124,6 +126,11 @@ defineEmits(['open-modal'])
 
 .spec-label {
   color: #6b7280;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .spec-value {
@@ -153,6 +160,7 @@ defineEmits(['open-modal'])
   cursor: pointer;
   transition: all 0.2s;
   border: none;
+  width: 100%;
 }
 
 .btn-details {
