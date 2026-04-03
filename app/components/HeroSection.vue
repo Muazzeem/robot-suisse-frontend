@@ -1,5 +1,5 @@
 <template>
-  <section class="hero">
+  <section class="hero" :style="heroStyle">
     <div class="hero-overlay"></div>
     <div class="container">
       <div class="hero-content">
@@ -21,11 +21,24 @@
 </template>
 
 <script setup>
+const config = useRuntimeConfig()
+
+const HOST = computed(() => {
+	return config.public.baseURL;
+});
+
 const props = defineProps({
   data: {
     type: Object,
     required: true
   }
+});
+
+const heroStyle = computed(() => {
+  const imageUrl = HOST.value + props.data?.image?.original?.src;
+  return {
+    background: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('${imageUrl}') center/cover`
+  };
 });
 </script>
 
@@ -33,8 +46,6 @@ const props = defineProps({
 .hero {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('https://images.pexels.com/photos/2085831/pexels-photo-2085831.jpeg?auto=compress&cs=tinysrgb&w=1920') center/cover;
   display: flex;
   align-items: flex-end;
   padding-bottom: 4rem;

@@ -9,12 +9,8 @@ export const useCommonPageStore = defineStore("commonPageStores", {
 
   actions: {
     async fetchPage(params = {}) {
-      const config = useRuntimeConfig();
-      
       try {
-        const data = await $fetch(`${PAGE_API_ROOT}/find/${buildParams(params)}`, {
-          baseURL: config.public.baseURL, // Changed from baseUrl
-        });
+        const data = await $fetch(`/api/page${buildParams(params)}`);
         return data;
       } catch (error) {
         console.error(error);

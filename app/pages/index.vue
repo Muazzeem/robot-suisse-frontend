@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div class="container">
-                    <FeaturedSection v-if="item?.type == 'robots'" :data="item?.value" />
+                    <FeaturedSection v-if="item?.type == 'robots'" :data="4" />
                 </div>
                 <div>
                     <div class="container">

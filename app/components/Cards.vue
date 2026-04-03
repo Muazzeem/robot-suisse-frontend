@@ -94,6 +94,13 @@ p {
   font-weight: 500 !important;
   vertical-align: middle !important;
 }
+:deep(.richtext h4){
+  font-size: 20px !important;
+  line-height: 30px !important;
+  font-weight: 500 !important;
+  vertical-align: middle !important;
+}
+
 :deep(.richtext p) {
   margin-top: 0.7rem !important;
   margin-bottom: 0.75rem !important;

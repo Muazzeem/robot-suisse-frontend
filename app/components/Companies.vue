@@ -8,6 +8,7 @@
         <div class="skeleton skeleton-text"></div>
         <div class="skeleton skeleton-text short"></div>
       </div>
+      
 
       <!-- Actual Content -->
       <div v-else v-for="org in organizations" :key="org.id" class="card" @click="navigateToOrganization(org.slug)">
@@ -103,7 +104,7 @@ const organizations = ref([]);
 const currentPage = ref(1);
 const totalPages = ref(1);
 const totalItems = ref(0);
-const pageSize = ref(6);
+const pageSize = ref(3);
 const loading = ref(true);
 
 // Calculate visible page numbers dynamically
@@ -166,7 +167,7 @@ const fetchCompanies = async (page = 1) => {
 
 // Navigate to company details page
 const navigateToOrganization = (slug) => {
-  router.push(`/companies/${slug}`);
+  router.push(`/company/${slug}`);
 };
 
 onMounted(() => {

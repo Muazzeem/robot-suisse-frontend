@@ -191,7 +191,6 @@ watch(membersPerSlide, () => {
   overflow: hidden;
   transition: all 0.3s ease;
   cursor: pointer;
-  background-color: #f3f4f6;
   display: flex;
   flex-direction: column;
   align-items: center;

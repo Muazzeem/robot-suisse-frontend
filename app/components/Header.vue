@@ -11,7 +11,7 @@
       <NuxtLink to="/" class="nav-link">{{ $t('menu.home') }}</NuxtLink>
       <NuxtLink to="/about-us" class="nav-link">{{ $t('menu.about') }}</NuxtLink>
       <ProductMenu :menu-color="'white'" :title="$t('menu.products')" />
-      <NuxtLink to="/blogs" class="nav-link">{{ $t('menu.blogs') }}</NuxtLink>
+      <NuxtLink to="/blog" class="nav-link">{{ $t('menu.blogs') }}</NuxtLink>
     </nav>
 
     <div class="header-actions">
@@ -50,7 +50,7 @@
           <NuxtLink to="/products" class="sidebar-link" @click="toggleSidebar">
             {{ $t('menu.products') }}
           </NuxtLink>
-          <NuxtLink to="/blogs" class="sidebar-link" @click="toggleSidebar">
+          <NuxtLink to="/blog" class="sidebar-link" @click="toggleSidebar">
             {{ $t('menu.blogs') }}
           </NuxtLink>
         </nav>

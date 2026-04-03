@@ -8,7 +8,7 @@
                 <section class="page-hero">
                     <div class="hero-background"></div>
                     <div class="hero-overlay" :style="{
-                        background: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(https://api.robot.marketize.biz/media/images/Robotic-Arm-Manufac.original.jpegquality-80.format-webp.webp) center/cover`
+                        background: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(https://fifadesk.com/media/images/Hero_Image.original.jpegquality-80.format-webp.webp) center/cover`
                     }"></div>
                     <div class="container" style="margin-top: 4rem;">
                         <div class="company-header">
@@ -18,7 +18,7 @@
                                         alt="ABB Logo" class="company-logo" />
                                     <div class="company-details">
                                         <h1 class="company-name">
-                                            {{ getStremleField(data.currentPage.company_name, $i18n.locale) }}
+                                            {{ getStremleField(data.currentPage.title, $i18n.locale) }}
                                         </h1>
                                         <p class="company-meta">North America · Robot OEM · 20-50 employees</p>
 

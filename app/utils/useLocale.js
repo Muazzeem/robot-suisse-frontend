@@ -1,22 +1,22 @@
-export const getLocaleField = (data, field, lang) => {
-  const isDefault = lang === "en";
-  const localizedKey = isDefault ? "en" : lang;
+export const getLocaleField = (data, fieldKey, locale) => {
+  const isDefault = locale === "en";
+  const localizedKey = isDefault ? "en" : locale;
 
-  if (data[field] && typeof data[field] === "object") {
-    return data[field][localizedKey] || data[field]["en"] || "";
+  if (data[fieldKey] && typeof data[fieldKey] === "object") {
+    return data[fieldKey][localizedKey] || data[fieldKey]["en"] || "";
   }
-  return data[`${field}_${localizedKey}`] || data[`${field}_en`] || data[field] || "";
+  return data[`${fieldKey}_${localizedKey}`] || data[`${fieldKey}_en`] || data[fieldKey] || "";
 };
 
 
-export const getStremleField = (data, lang) => {
+export const getStremleField = (data, locale) => {
   if (!data) return "";
   if (typeof data === "string") return data;
   if (Array.isArray(data) && data.length > 0) {
     const firstBlock = data[0];
     if (firstBlock?.value) {
       if (typeof firstBlock.value === "object") {
-        const content = firstBlock.value[lang] || firstBlock.value["en"] || "";
+        const content = firstBlock.value[locale] || firstBlock.value["en"] || "";
         return content.replace(/<[^>]*>/g, '');
       }
       return firstBlock.value;
@@ -24,7 +24,7 @@ export const getStremleField = (data, lang) => {
     return "";
   }
   if (typeof data === "object") {
-    return data[lang] ?? data["en"] ?? "";
+    return data[locale] ?? data["en"] ?? "";
   }
 
   return "";

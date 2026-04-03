@@ -186,7 +186,26 @@ const closeModal = () => {
 
 .products-grid {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.3rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 .featured {
   margin-top: 1.5rem;

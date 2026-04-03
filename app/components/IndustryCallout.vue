@@ -55,7 +55,7 @@ const ImageUrl = computed(() => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.075) 0%, rgba(0, 0, 0, 0.046) 100%);
 }
 
 .content {

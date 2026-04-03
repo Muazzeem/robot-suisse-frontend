@@ -34,7 +34,7 @@
     <div v-if="messages.length === 0" class="welcome-screen">
       
       <div class="welcome-content">
-        <div class="welcome-icon">
+        <div class="welcome-icon" v-if="route.path === '/chat'">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" opacity="0.3"/>
             <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -42,7 +42,7 @@
           </svg>
         </div>
         <h1 class="welcome-title">Talk with your Robonnement Guide Assistant</h1>
-        <p class="welcome-subtitle">How can I help you today?</p>
+        <p class="welcome-subtitle" v-if="route.path === '/chat'">How can I help you today?</p>
       </div>
     </div>
 
@@ -169,7 +169,7 @@ const messagesContainer = ref(null)
 
 const uidCookie = useCookie('uid')
 
-const API_BASE = 'https://api.robot.marketize.biz/api/v1'
+const API_BASE = 'https://fifadesk.com/api/v1'
 
 const inputPlaceholder = computed(() =>
   isTyping.value ? 'AI is typing...' : 'Ask anything...'
@@ -267,7 +267,7 @@ const handleWsMessage = (event) => {
 const connectWebSocket = () => {
   if (!uidCookie.value) return
   try {
-    const wsUrl = `wss://api.robot.marketize.biz/ws/chat?uid=${encodeURIComponent(uidCookie.value)}`
+    const wsUrl = `wss://fifadesk.com/ws/chat?uid=${encodeURIComponent(uidCookie.value)}`
     const ws = new WebSocket(wsUrl)
     socket.value = ws
     ws.onopen = () => {
@@ -304,7 +304,7 @@ const sendMessage = async () => {
   scrollToBottom()
 
   try {
-    const response = await fetch('https://n8n.marketize.biz/webhook/robot-chat', {
+    const response = await fetch('https://n8n.fifadesk.com/webhook/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ session_id: uidCookie.value, message: msg, company_name: "robot_suisses"}),

@@ -16,7 +16,7 @@
 
         <div class="ai-chat-demo" ref="chatDemo">
           <div class="chat-window">
-            <ChatPage :data="{ 'min-height': '40rem', 'max-height': '40rem' }" />
+            <ChatPage :data="{ 'min-height': '35rem', 'max-height': '40rem' }" />
           </div>
         </div>
       </div>
@@ -149,6 +149,7 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  border-radius: 20px;
 }
 
 @keyframes slideIn {

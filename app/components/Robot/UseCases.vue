@@ -1,5 +1,5 @@
 <template>
-  <section class="featured" v-if="data.items?.length">
+  <section class="use-cases-section" v-if="data.items?.length">
     <!-- Tabs -->
     <div class="tabs">
       <button
@@ -95,30 +95,31 @@ const currentIcon = computed(() => {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 4rem;
+  margin: 0 auto 4rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  width: fit-content;
 }
 
 .tab-button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px 6px 0 0;
   font-weight: 500;
   border: none;
+  border-bottom: 3px solid transparent;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background-color: white;
+  transition: all 0.2s ease;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
   color: #6b7280;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.tab-button:hover {
-  background-color: #f9fafb;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
 }
 
 .tab-button.active {
-  background-color: #FF0000;
-  color: white;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  background-color: #fde8e8;
+  color: #FF0000;
+  border-bottom: 1.5px solid #FF0000;
 }
 
 /* Content Grid */

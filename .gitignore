@@ -26,3 +26,4 @@ logs
 # Lock files (keep only one)
 yarn.lock
 package-lock.json
+.vercel

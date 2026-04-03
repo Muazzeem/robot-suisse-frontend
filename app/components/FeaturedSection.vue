@@ -31,11 +31,22 @@ const HOST = computed(() => {
 	return config.public.baseURL;
 });
 
-const API_URL = `${HOST.value}/api/v2/pages/?type=home.RobotDetailPage&fields=title,short_description,thumbnail,author,tags,fetch_parent,last_published_at,body,is_featured,slug`
+const props = defineProps({
+  data: {
+    type: Number,
+    required: false,
+  }
+});
+
+
+const API_URL = computed(() => {
+  const base = `${HOST.value}/api/v2/pages/?type=home.RobotDetailPage&fields=title,short_description,thumbnail,author,tags,fetch_parent,last_published_at,body,is_featured,slug`
+  return props.data ? `${base}&limit=${props.data}` : base
+})
 
 const fetchRobots = async () => {
   try {
-    const response = await fetch(API_URL)
+    const response = await fetch(API_URL.value)
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
 
     const data = await response.json()
@@ -67,23 +78,31 @@ onMounted(() => {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  grid-template-columns: 1fr;
+  gap: 1.3rem;
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 640px) {
   .products-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
   .featured {
     padding: 4rem 0;
-  }
-
-  .products-grid {
-    grid-template-columns: 1fr;
   }
 }
 </style>
